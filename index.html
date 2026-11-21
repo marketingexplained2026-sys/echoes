@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Echoes">
+<meta name="description" content="Every journey has a story beneath it.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Echoes</title>
+<style>
+:root{--paper:#fff;--ink:#1d1d1f;--pencil:#5e5e63;--hair:#e8e8ed;--action:#0066cc;--soft:#f5f5f7;
+--serif:ui-serif,"New York","Iowan Old Style","Noto Serif",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root{--paper:#0b0b0c;--ink:#f5f5f7;--pencil:#a1a1a6;--hair:#2c2c2e;--action:#4da3ff;--soft:#1c1c1e}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--paper);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+.app{position:relative;max-width:520px;margin:0 auto;height:100svh;overflow:hidden}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 28px) 24px calc(env(safe-area-inset-bottom) + 24px);opacity:0;pointer-events:none;transition:opacity .6s ease;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.on{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.screen,.fade,.window{transition:none!important}}
+h1,h2,.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.2px}
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:14px;background:var(--ink);color:var(--paper);font:600 17px var(--sans);cursor:pointer}
+.link{border:0;background:none;color:var(--action);font:17px var(--sans);min-height:44px;cursor:pointer;padding:0 4px}
+.quiet{color:var(--pencil);font-size:15px;line-height:1.45}
+.eyebrow{font:600 13px var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--pencil)}
+.fade{transition:opacity 1s ease,transform 1s ease}
+/* welcome */
+#welcome{padding:0;justify-content:flex-end;color:#fff}
+#welcome .art{position:absolute;inset:0}#welcome .art svg,#welcome .art img{width:100%;height:100%}
+#welcome .copy{position:relative;padding:0 28px calc(env(safe-area-inset-bottom) + 40px);background:linear-gradient(transparent,rgba(0,0,0,.55) 35%)}
+#welcome h1{font-size:clamp(32px,9.5vw,44px);line-height:1.1;margin:0 0 12px}#welcome p{margin:0 0 28px;font-size:17px;opacity:.92}
+#welcome .btn{background:#fff;color:#1d1d1f}
+/* plan */
+#plan h1{font-size:clamp(28px,8.2vw,36px);line-height:1.15;margin:8px 0 28px}
+.route{display:flex;align-items:center;gap:12px}
+.city{flex:1;min-width:0;border:0;border-bottom:1px solid var(--hair);background:none;color:var(--ink);font:26px var(--serif);padding:8px 0;-webkit-appearance:none;appearance:none;border-radius:0}
+.arrow{color:var(--pencil);font-size:20px}
+.when{display:flex;gap:10px;align-items:center;color:var(--pencil);font-size:15px;margin:14px 0 34px;flex-wrap:wrap}
+.when input{border:0;background:var(--soft);color:var(--ink);font:15px var(--sans);padding:6px 10px;border-radius:8px}
+.ask{font:17px var(--sans);margin:0}
+.wins{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 8px}
+.win{border:1px solid var(--hair);background:none;border-radius:18px;padding:16px 8px 12px;cursor:pointer;color:var(--ink);font:15px var(--sans);min-height:44px}
+.win.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.win svg{display:block;margin:0 auto 8px}
+.planfoot{display:flex;justify-content:space-between;margin-top:10px}
+/* prep */
+#prep{justify-content:center}
+#prepSvg{width:100%;height:auto;margin-bottom:24px}
+#prepLine{font:24px/1.35 var(--serif);margin:0 0 28px;min-height:120px}
+#ready h2{font-size:26px;margin:0 0 8px}
+/* sky */
+#sky{padding:calc(env(safe-area-inset-top) + 16px) 18px calc(env(safe-area-inset-bottom) + 12px)}
+.window{flex:1;min-height:420px;border-radius:clamp(80px,28vw,130px);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;transition:background 1.5s ease,box-shadow 1.2s ease;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);cursor:pointer}
+.window .calm{font:clamp(19px,5.2vw,23px)/1.4 var(--serif);color:rgba(29,29,31,.8);max-width:270px}
+.window .hook{position:absolute;left:28px;right:28px;top:50%;margin-top:-1.5em;font:clamp(22px,6.4vw,30px)/1.3 var(--serif);color:#1d1d1f;opacity:0;transform:translateY(8px);pointer-events:none}
+.window .hook.show{opacity:1;transform:none}
+.window.night .calm,.window.night .hook{color:rgba(245,245,247,.92)}
+.window .tapbtn{position:absolute;bottom:clamp(28px,7vh,56px);left:50%;transform:translateX(-50%);opacity:0;pointer-events:none;z-index:3;white-space:nowrap}
+.window .tapbtn.show{opacity:1;pointer-events:auto}
+.window.warm{box-shadow:inset 0 0 0 1px rgba(0,0,0,.05),inset 0 0 120px rgba(255,190,120,.45)}
+.window .art{position:absolute;inset:0;opacity:0;display:flex;align-items:center;pointer-events:none}
+#inAction{position:relative;z-index:3}
+.window .art svg{width:100%;height:auto}
+.window .art img{position:absolute;inset:0}
+.window .art.show{opacity:1}
+.reveal{position:absolute;left:0;right:0;bottom:0;padding:24px 28px 44px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;text-align:left;opacity:0;pointer-events:none}
+.reveal.show{opacity:1}
+.reveal.show .revActs{pointer-events:auto}
+.reveal:not(.show) .revActs{pointer-events:none}
+.reveal .name{font:30px/1.1 var(--serif);margin:0 0 6px}.reveal .pos{font-size:15px;opacity:.92}
+.window .inbtn{margin-top:22px;border:0;border-radius:999px;padding:12px 20px;font:600 15px var(--sans);background:rgba(255,255,255,.85);color:#1d1d1f;cursor:pointer;min-height:44px}
+.skyfoot{display:flex;justify-content:center;align-items:center;min-height:12px;margin-top:8px}
+#sky,.withtabs{padding-bottom:calc(env(safe-area-inset-bottom) + 76px)!important}
+.tabs{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:6px 0 calc(env(safe-area-inset-bottom) + 8px);background:color-mix(in srgb,var(--paper) 88%,transparent);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid var(--hair);z-index:4}
+.tabs button{flex:1;border:0;background:none;color:var(--pencil);font:500 11px var(--sans);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;cursor:pointer}
+.tabs button.on{color:var(--action)}
+.tabs button{position:relative}.tabs button.dot::after{content:"";position:absolute;top:6px;left:calc(50% + 10px);width:8px;height:8px;border-radius:50%;background:var(--action)}
+.hookActs{position:absolute;bottom:clamp(28px,7vh,56px);left:0;right:0;display:flex;justify-content:center;gap:10px;opacity:0;pointer-events:none;z-index:3}
+.hookActs.show{opacity:1;pointer-events:auto}
+.stack{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:20px}
+.pick{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-top:18px;font-size:15px}.pick label{width:100%;text-align:center;color:inherit;opacity:.8}
+.pick input{font:17px var(--sans);padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.85);color:#1d1d1f}
+.rows .pick{justify-content:flex-end;margin:0}.rows .pick label{display:none}
+.revActs{display:flex;gap:10px;align-items:center;margin-top:16px}
+.ghost{border:0;background:none;color:rgba(29,29,31,.6);font:500 15px var(--sans);min-height:44px;padding:0 14px;cursor:pointer}
+.window.night .ghost{color:rgba(245,245,247,.7)}.ghost.light{color:rgba(255,255,255,.85)}
+.sec{font:600 13px var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--pencil);margin:22px 0 4px}
+#mapSvg{width:100%;aspect-ratio:340/300;height:auto;margin-top:8px;flex:0 0 auto;min-height:220px}
+.place{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--hair);cursor:pointer;min-height:56px}
+.place .th{width:52px;height:52px;border-radius:12px;overflow:hidden;flex:0 0 auto}.place .th svg,.place .th img{width:100%;height:100%;display:block;object-fit:cover}
+.place .tx{flex:1;min-width:0}.place b{display:block;font:600 16px var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.place span{font-size:13px;color:var(--pencil)}.place.now span{color:var(--action)}.place.ahead{opacity:.75}
+.place .side{font-size:12px;color:var(--pencil);white-space:nowrap}
+.demo{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--pencil)}
+.demo button{border:1px solid var(--hair);background:none;color:var(--ink);border-radius:999px;padding:6px 12px;font:13px var(--sans);min-height:32px;cursor:pointer}
+/* story */
+#story{padding:0 0 calc(env(safe-area-inset-bottom) + 24px)}
+#story .hero{height:300px;flex:0 0 auto}#story .hero svg{width:100%;height:100%;display:block}
+#story .hero{height:min(300px,40vh);overflow:hidden;background:var(--soft)}
+#story .body{padding:24px 26px 0}
+#story h2{font-size:34px;line-height:1.1;margin:6px 0 6px}
+#story .ctx{font-size:15px;color:var(--pencil);margin:0 0 22px}
+#story .text{font:19px/1.6 var(--serif);margin:0}
+#story .take{font:italic 21px/1.45 var(--serif);margin:26px 0 0;padding-left:16px;border-left:2px solid var(--hair)}
+#story .look{font-size:15px;color:var(--pencil);margin:24px 0 0;line-height:1.45}#story .look b{color:var(--ink);font-weight:600}
+#story .deep{font:17px/1.6 var(--serif);margin:16px 0 0}
+#story .actions{display:flex;justify-content:flex-end;padding:20px 22px 0}
+.close{position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:16px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.88);font-size:18px;cursor:pointer;color:#1d1d1f}
+/* map */
+
+/* journal + echoes */
+#journal h1,#echoes h1{font-size:32px;line-height:1.15;margin:8px 0 4px}
+#jDate{color:var(--pencil);font-size:15px;margin:0 0 24px}
+#jSum{font:22px/1.45 var(--serif);margin:0 0 28px}
+.echo{display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--hair);cursor:pointer;min-height:44px}
+.echo .th{width:64px;height:64px;border-radius:14px;overflow:hidden;flex:0 0 auto}.echo .th svg,.echo .th img{width:100%;height:100%;display:block;object-fit:cover}
+.echo b{display:block;font:600 17px var(--serif)}.echo span{font-size:14px;color:var(--pencil)}
+/* sheet */
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:24px 24px 0 0;padding:14px 24px calc(env(safe-area-inset-bottom) + 24px);box-shadow:0 -10px 40px rgba(0,0,0,.15);transform:translateY(105%);transition:transform .45s cubic-bezier(.2,.8,.2,1);z-index:5}
+.sheet.on{transform:none}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--hair);margin:0 auto 18px}
+.sheet h3{font:22px var(--serif);margin:0 0 16px}
+.rows div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--hair);font-size:17px}.rows span{color:var(--pencil);text-align:right}
+.toast{position:absolute;left:24px;right:24px;top:calc(env(safe-area-inset-top) + 16px);text-align:center;background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:14px;font-size:15px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+
+/* ---------- Journey: illustrated atlas (warm charcoal, ivory, sage, dusty blue, amber) */
+#journey,#allSheet,#detSheet{--j-bg:#1d1b18;--j-surface:#282521;--j-ink:#f1eadc;--j-mute:#b9af9e;--j-hair:#3a362f;--j-land:#343a2f;--j-sea:#232a2d;--j-river:#7f9bab;--j-range:#4a5340;--j-amber:#e0a84e;--j-desert:#4a4434}
+#journey>*{flex-shrink:0}
+#journey{background:var(--j-bg);color:var(--j-ink);padding-left:0;padding-right:0}
+#journey .link,#detSheet .link{color:var(--j-amber)}
+.j-head{padding:0 22px}
+.j-head h1{font-size:clamp(24px,7vw,30px);line-height:1.15;margin:4px 0 2px;color:var(--j-ink)}
+.j-head p{margin:0;color:var(--j-mute);font:italic 16px var(--serif)}
+.atlas-wrap{position:relative;margin:16px 14px 0}
+.atlas{position:relative;height:clamp(300px,46svh,440px);border-radius:22px;overflow:hidden;background:var(--j-land);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.atlas:active{cursor:grabbing}
+#atlasSvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.j-river{fill:none;stroke:var(--j-river);stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-linecap:round;opacity:.85}
+.j-range{fill:none;stroke:var(--j-range);stroke-width:16;vector-effect:non-scaling-stroke;stroke-linecap:round;opacity:.55}
+.j-range.j-high{stroke:#5a6250;stroke-width:22;opacity:.6}
+.j-desert{fill:var(--j-desert);opacity:.55}
+.j-coast{fill:none;stroke:#8e9a8c;stroke-width:1;vector-effect:non-scaling-stroke;opacity:.45}
+.j-route{fill:none;stroke:var(--j-ink);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-dasharray:1 5;stroke-linecap:round;opacity:.9}
+.j-seg{fill:none;stroke:var(--j-amber);stroke-width:9;vector-effect:non-scaling-stroke;stroke-linecap:round;opacity:.38}
+#atlasOverlay{position:absolute;inset:0;pointer-events:none}
+#atlasOverlay>*{position:absolute;transform:translate(-50%,-50%)}
+.j-region{font:italic 12px var(--serif);letter-spacing:.4px;color:#c9c0ae;opacity:.6;white-space:nowrap}
+.j-region.sea{color:#9fb1ba;letter-spacing:2px;text-transform:uppercase;font:500 10px var(--sans)}.j-region.river{color:var(--j-river);opacity:.9}
+.j-city{font:600 12px var(--sans);color:var(--j-ink);white-space:nowrap;display:flex;align-items:center;gap:6px;transform:translate(-6px,-50%)!important}
+.j-city i{width:8px;height:8px;border-radius:50%;background:var(--j-ink);display:block}
+.j-mk,.j-grp{pointer-events:auto;border:0;background:none;padding:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.j-th{display:block;width:30px;height:30px;border-radius:50%;overflow:hidden;border:2px solid var(--j-ink);box-shadow:0 2px 6px rgba(0,0,0,.35);background:var(--j-surface)}
+.j-th img,.j-th svg{width:100%;height:100%;object-fit:cover;display:block}
+.j-mk.op .j-th{border-color:#cdbf9f}
+.j-grp b{position:absolute;right:2px;top:2px;min-width:18px;height:18px;border-radius:9px;background:var(--j-ink);color:var(--j-bg);font:700 11px var(--sans);display:flex;align-items:center;justify-content:center;padding:0 4px}
+.j-near{pointer-events:auto;z-index:4;min-width:44px;height:44px;border:0;background:none;cursor:pointer;font:700 12px var(--sans);color:var(--j-bg);display:flex;align-items:center;justify-content:center}
+.j-near::before{content:"";position:absolute;inset:11px 8px;border-radius:11px;background:var(--j-ink);z-index:-1}
+.j-mk.sel{z-index:3;width:64px;height:64px}
+.j-mk.sel .j-th{width:52px;height:52px;border:3px solid var(--j-amber);box-shadow:0 0 0 4px rgba(224,168,78,.25),0 4px 12px rgba(0,0,0,.45)}
+.j-name{position:absolute;top:60px;left:50%;transform:translateX(-50%);white-space:nowrap;font:600 14px var(--serif);color:var(--j-ink);background:rgba(29,27,24,.82);padding:3px 9px;border-radius:8px}
+.j-plane{width:14px;height:14px;border-radius:50%;background:var(--j-ink);box-shadow:0 0 0 4px rgba(241,234,220,.25),0 0 0 1px #000;z-index:2}
+.j-about{font:600 11px var(--sans);color:var(--j-amber);letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;text-shadow:0 1px 2px #000;transform:translate(calc(-100% - 14px),-50%)!important}
+.atlas-ctrl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:8px}
+.jround{width:44px;height:44px;border-radius:50%;border:1px solid var(--j-hair);background:rgba(40,37,33,.92);color:var(--j-ink);font:20px/1 var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.jround:disabled{opacity:.35;cursor:default}
+.jpill{position:absolute;left:50%;top:12px;transform:translateX(-50%);border:0;border-radius:999px;background:var(--j-ink);color:var(--j-bg);font:600 14px var(--sans);padding:0 16px;min-height:40px;cursor:pointer;white-space:nowrap}
+.atlas-note{margin:8px 22px 0;font:500 11px var(--sans);letter-spacing:.4px;color:var(--j-mute);opacity:.8}
+.jstatus{margin:4px 22px 0;font-size:14px;color:var(--j-mute);line-height:1.5}
+.jstatus .link{font-size:14px;min-height:44px;padding:0 4px;vertical-align:middle}
+.cards{position:relative;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:16px 7% 4px;scroll-padding:0 7%;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.cards::-webkit-scrollbar{display:none}
+.card{flex:0 0 86%;scroll-snap-align:center;background:var(--j-surface);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.cimg{aspect-ratio:16/9;background:#2f2b26}.cimg img,.cimg svg{width:100%;height:100%;object-fit:cover;display:block}
+.cbody{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.ctx{font:600 11px var(--sans);letter-spacing:.7px;text-transform:uppercase;color:var(--j-amber)}
+.card h3{font:400 clamp(24px,6.6vw,28px)/1.15 var(--serif);margin:8px 0 8px;color:var(--j-ink)}
+.card p{font:17px/1.45 var(--serif);color:#ddd4c3;margin:0 0 16px;flex:1}
+.cact{display:flex;align-items:center;gap:12px}
+.jbtn{border:1px solid var(--j-hair);background:transparent;color:var(--j-ink);border-radius:999px;font:600 15px var(--sans);padding:0 18px;min-height:44px;cursor:pointer}
+.jbtn.read{background:var(--j-ink);color:var(--j-bg);border-color:var(--j-ink)}
+.jbtn.on{border-color:var(--j-amber);color:var(--j-amber)}
+.cstate{font-size:13px;color:var(--j-mute)}
+.cnav{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:10px;color:var(--j-mute);font-size:14px}
+.jlinks{display:flex;justify-content:center;gap:10px;margin:18px 22px 8px;flex-wrap:wrap}
+.jlink{border:1px solid var(--j-hair);background:transparent;color:var(--j-ink);border-radius:999px;font:500 15px var(--sans);padding:0 18px;min-height:44px;cursor:pointer}
+.jsheet{position:absolute;left:0;right:0;bottom:0;z-index:7;background:var(--j-bg);color:var(--j-ink);border-radius:24px 24px 0 0;padding:14px 22px calc(env(safe-area-inset-bottom) + 22px);transform:translateY(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);max-height:82%;overflow-y:auto;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.jsheet.on{transform:none}
+.jsheet.full{top:0;max-height:none;border-radius:0;padding-top:calc(env(safe-area-inset-top) + 16px);display:flex;flex-direction:column;overflow:hidden}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:6}.scrim.on{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.jsheet,.scrim{transition:none}}
+.sh-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.sh-head h2{font:400 24px/1.2 var(--serif);margin:4px 0 0;color:var(--j-ink)}
+.jsheet .eyebrow{color:var(--j-amber)}
+.jsheet .grab{background:var(--j-hair)}
+.all-list{overflow-y:auto;flex:1;padding-bottom:calc(env(safe-area-inset-bottom) + 20px);-webkit-overflow-scrolling:touch}
+.grp{font:600 12px var(--sans);letter-spacing:.7px;text-transform:uppercase;color:var(--j-mute);margin:26px 0 6px}
+.story-row{display:flex;gap:16px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;color:inherit;padding:12px 0;cursor:pointer}
+.sr-img{flex:0 0 128px;height:88px;border-radius:14px;overflow:hidden;background:#2f2b26}.sr-img img,.sr-img svg{width:100%;height:100%;object-fit:cover;display:block}
+.sr-tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sr-tx b{font:400 19px/1.2 var(--serif);color:var(--j-ink)}
+.sr-hook{font:15px/1.4 var(--serif);color:#cfc6b4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sr-st{font:600 11px var(--sans);letter-spacing:.5px;text-transform:uppercase;color:var(--j-amber)}
+.drow{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--j-hair);font-size:16px}
+.drow span{color:var(--j-mute)}.drow b{font-weight:500;text-align:right}
+.drow .link{font-size:16px;min-height:0;padding:0 0 0 6px}
+.dbtns{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--j-hair);flex-wrap:wrap}
+.dnote{font:15px/1.5 var(--serif);color:var(--j-mute);margin:16px 0 4px}
+#detSheet .pick{justify-content:flex-end;margin:0}#detSheet .pick label{display:none}
+#detSheet .pick input{background:var(--j-surface);color:var(--j-ink);border-color:var(--j-hair)}
+#detSheet .inbtn{background:var(--j-ink);color:var(--j-bg);border:0;border-radius:999px;font:600 15px var(--sans);padding:0 16px;min-height:40px;cursor:pointer}
+.tabs.dark{background:rgba(29,27,24,.94);border-top-color:#3a362f}.tabs.dark button{color:#b9af9e}.tabs.dark button.on{color:#e0a84e}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <section class="screen" id="welcome">
+    <div class="art" id="welcomeArt"></div>
+    <div class="copy">
+      <h1>Every journey has a story beneath it.</h1>
+      <p>There's more to this flight than the distance between two cities.</p>
+      <button class="btn" id="begin">Begin</button>
+    </div>
+  </section>
+
+  <section class="screen" id="plan">
+    <div class="eyebrow">Echoes</div>
+    <h1>Where are you flying today?</h1>
+    <div class="route">
+      <select class="city" id="from" aria-label="From"></select><span class="arrow">→</span><select class="city" id="to" aria-label="To"></select>
+    </div>
+    <div class="when"><input type="date" id="date" aria-label="Date"><input type="time" id="time" aria-label="Departure time"></div>
+    <p class="ask">Which window is yours?</p>
+    <div class="wins">
+      <button class="win" data-side="L"><svg width="70" height="56" viewBox="0 0 70 56"><rect x="1" y="1" width="68" height="54" rx="10" fill="none" stroke="currentColor" opacity=".25"/><rect x="8" y="10" width="20" height="30" rx="10" fill="#e7f0fa" stroke="currentColor" stroke-width="1.5"/><circle cx="50" cy="28" r="4" fill="currentColor" opacity=".35"/></svg>Left side</button>
+      <button class="win" data-side="R"><svg width="70" height="56" viewBox="0 0 70 56"><rect x="1" y="1" width="68" height="54" rx="10" fill="none" stroke="currentColor" opacity=".25"/><rect x="42" y="10" width="20" height="30" rx="10" fill="#e7f0fa" stroke="currentColor" stroke-width="1.5"/><circle cx="20" cy="28" r="4" fill="currentColor" opacity=".35"/></svg>Right side</button>
+    </div>
+    <p class="quiet" style="margin:4px 0 0">Seat A is usually on the left.</p>
+    <div style="flex:1;min-height:24px"></div>
+    <button class="btn" id="getStories">Get My Stories</button>
+    <div class="planfoot"><button class="link" id="demoBtn">Try a Demo Flight</button><button class="link" id="echoesBtn" hidden>Your Echoes</button></div>
+  </section>
+
+  <section class="screen" id="prep">
+    <svg viewBox="0 0 340 200" id="prepSvg" aria-hidden="true"></svg>
+    <p id="prepLine" class="fade" style="opacity:0"></p>
+    <div id="ready" class="fade" style="opacity:0">
+      <h2>Your stories are ready to fly.</h2>
+      <p class="quiet" style="margin:0 0 28px">Everything is saved on your phone. Switch on flight mode whenever you're asked, and keep location on.</p>
+      <button class="btn" id="board">I'm on Board</button>
+    </div>
+  </section>
+
+  <section class="screen" id="sky">
+    <div class="window" id="win">
+      <div class="art" id="winArt"></div>
+      <div class="calm fade" id="calm"></div>
+      <div id="inAction"></div>
+      <div class="hook fade" id="hook"></div>
+      <div class="hookActs fade" id="hookActs"><button class="ghost" id="later1">Later</button><button class="inbtn" id="tap" style="margin:0">Show Me Where</button></div>
+      <div class="reveal fade" id="reveal"><div class="name" id="rName"></div><div class="pos" id="rPos"></div><div class="revActs"><button class="inbtn" id="readBtn" style="margin:0">Read the Story</button><button class="ghost light" id="later2">Later</button></div></div>
+    </div>
+    <div class="skyfoot"><div class="demo" id="demoBar" hidden><span>Demo flight</span><button id="play">Play</button><button id="skip">Next ›</button></div></div>
+  </section>
+
+  <section class="screen" id="story">
+    <div class="hero" id="sHero"></div>
+    <button class="close" id="sClose" aria-label="Back to the sky">✕</button>
+    <div class="body">
+      <div class="eyebrow" id="sPos"></div>
+      <h2 id="sName"></h2>
+      <p class="ctx" id="sCtx"></p>
+      <p class="text" id="sText"></p>
+      <p class="take" id="sTake"></p>
+      <p class="look" id="sLook"></p>
+      <button class="link" id="moreBtn" style="margin-top:14px;padding:0">Tell Me More</button>
+      <p class="deep" id="sDeep" hidden></p>
+    </div>
+    <div class="actions"><button class="link" id="sBack">Back to the Sky</button></div>
+  </section>
+
+  <section class="screen withtabs" id="journey" aria-label="Journey">
+    <header class="j-head">
+      <h1 id="jRoute"></h1>
+      <p>Stories along your journey.</p>
+    </header>
+    <div class="atlas-wrap">
+      <div class="atlas" id="atlas" role="region" aria-label="Journey overview map. Simplified geography, not for navigation.">
+        <svg id="atlasSvg" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div id="atlasOverlay"></div>
+      </div>
+      <div class="atlas-ctrl"><button class="jround" id="jZoomIn" aria-label="Zoom in">+</button><button class="jround" id="jZoomOut" aria-label="Zoom out">−</button></div>
+      <button class="jpill" id="jReturn" hidden>Return to current region</button>
+    </div>
+    <p class="atlas-note">Journey overview · simplified geography, not for navigation</p>
+    <p class="jstatus"><span id="jStatusText"></span> · <button class="link" id="jStatusBtn"></button></p>
+    <div class="cards" id="jCards" aria-label="Story previews. Swipe, or use the previous and next buttons."></div>
+    <div class="cnav"><button class="jround" id="jPrev" aria-label="Previous story">‹</button><span id="jCount" aria-live="polite"></span><button class="jround" id="jNext" aria-label="Next story">›</button></div>
+    <div class="jlinks"><button class="jlink" id="jAll">All stories</button><button class="jlink" id="jDetails">Journey details</button></div>
+  </section>
+
+  <div class="jsheet full" id="allSheet" aria-hidden="true" role="dialog" aria-label="All stories">
+    <div class="sh-head"><div><div class="eyebrow">All stories</div><h2 id="allTitle"></h2></div><button class="jround" id="allClose" aria-label="Close all stories">✕</button></div>
+    <div class="all-list" id="allList"></div>
+  </div>
+  <div class="scrim" id="scrim"></div>
+  <div class="jsheet" id="detSheet" aria-hidden="true" role="dialog" aria-label="Journey details">
+    <div class="grab"></div>
+    <div class="sh-head"><h2>Journey details</h2><button class="jround" id="detClose" aria-label="Close journey details">✕</button></div>
+    <div id="detBody"></div>
+  </div>
+
+  <section class="screen" id="journal">
+    <div class="eyebrow">Your flight's echoes</div>
+    <h1 class="serif" id="jTitle"></h1>
+    <p id="jDate"></p>
+    <p id="jSum"></p>
+    <div id="jList"></div>
+    <button class="btn" style="margin-top:24px;flex:0 0 auto" id="save">Save This Flight</button>
+    <button class="link" style="align-self:center;margin-top:8px" id="jDone">Done</button>
+  </section>
+
+  <section class="screen" id="echoes">
+    <div class="eyebrow">Echoes</div>
+    <h1 class="serif">Your flights</h1>
+    <p class="quiet" style="margin:0 0 20px">Every story you've met above India.</p>
+    <div id="eList"></div>
+    <button class="link" style="align-self:center;margin-top:16px" id="eBack">Back</button>
+  </section>
+
+  <nav class="tabs" id="tabs" hidden>
+    <button data-tab="sky" class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="6" y="2.5" width="12" height="19" rx="6"/></svg>Now</button>
+    <button data-tab="journey"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 18c3-1 4-6 8-7s5-5 8-7"/><circle cx="4" cy="18" r="1.6"/><circle cx="20" cy="4" r="1.6"/></svg>Journey</button>
+  </nav>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+const PHOTOS = new Set(["aravalli", "bhimbetka", "bhopal", "chambal", "chandigarh", "deccan", "godavari", "krishna", "kurukshetra", "lepakshi", "mathura", "nandi", "qutub", "ranthambore", "rashtrapati", "sanchi", "satpura", "tropic", "yamuna"]);
+// ECHOES — journey data (India, flights). English stories.
+// Airports: [IATA, City, lat, lon]
+const AIRPORTS = [
+["AMD","Ahmedabad",23.077,72.635],["ATQ","Amritsar",31.707,74.797],["IXB","Bagdogra (Siliguri)",26.681,88.328],
+["BLR","Bengaluru",13.199,77.706],["BHO","Bhopal",23.287,77.337],["BBI","Bhubaneswar",20.244,85.818],
+["IXC","Chandigarh",30.673,76.788],["MAA","Chennai",12.990,80.169],["CJB","Coimbatore",11.030,77.043],
+["DED","Dehradun",30.190,78.180],["DEL","Delhi",28.556,77.100],["DIB","Dibrugarh",27.483,95.017],
+["GOI","Goa (Dabolim)",15.381,73.831],["GOX","Goa (Mopa)",15.744,73.861],["GAU","Guwahati",26.106,91.586],
+["HYD","Hyderabad",17.240,78.429],["IMF","Imphal",24.760,93.897],["IDR","Indore",22.722,75.801],
+["JAI","Jaipur",26.824,75.812],["IXJ","Jammu",32.689,74.837],["JDH","Jodhpur",26.251,73.049],
+["COK","Kochi",10.152,76.402],["CCU","Kolkata",22.654,88.447],["CCJ","Kozhikode",11.137,75.951],
+["IXL","Leh",34.136,77.546],["LKO","Lucknow",26.761,80.889],["IXM","Madurai",9.834,78.093],
+["IXE","Mangaluru",12.961,74.890],["BOM","Mumbai",19.089,72.868],["NMI","Navi Mumbai",18.990,73.070],
+["NAG","Nagpur",21.092,79.047],["PAT","Patna",25.591,85.088],["IXZ","Port Blair",11.641,92.730],
+["PNQ","Pune",18.582,73.920],["RPR","Raipur",21.180,81.739],["IXR","Ranchi",23.314,85.322],
+["SXR","Srinagar",33.987,74.774],["STV","Surat",21.114,72.742],["TRV","Thiruvananthapuram",8.482,76.920],
+["TRZ","Tiruchirappalli",10.765,78.710],["UDR","Udaipur",24.618,73.896],["BDQ","Vadodara",22.336,73.226],
+["VNS","Varanasi",25.452,82.859],["VGA","Vijayawada",16.530,80.797],["VTZ","Visakhapatnam",17.721,83.225]
+];
+
+// Places: id, n=name, t=type, r=radius km (how far away it is still worth telling), p=points [[lat,lon],...], s=story
+const PLACES = [
+// ---- North & Himalaya
+{id:"everest",n:"Mount Everest (far horizon, Nepal)",t:"peak",r:260,p:[[27.988,86.925]],s:"On a very clear day the highest point on Earth may show on the northern horizon: Mount Everest, 8,849 metres, in Nepal. Its height was first worked out in the 1850s by the Great Trigonometrical Survey of India, from survey stations down on the plains, and the Indian mathematician Radhanath Sikdar is credited with the calculation."},
+{id:"kanchenjunga",n:"Kanchenjunga",t:"peak",r:250,p:[[27.703,88.147]],s:"Kanchenjunga, 8,586 metres, is the third-highest mountain in the world and the highest in India. Its name is often translated as 'Five Treasures of the Snow'. When a British team first climbed it in 1955, they stopped just short of the very top, keeping a promise to the people of Sikkim that the summit would stay untouched. Many climbers still follow that tradition."},
+{id:"nandadevi",n:"Nanda Devi",t:"peak",r:220,p:[[30.376,79.971]],s:"Nanda Devi, 7,816 metres, is the highest mountain lying entirely inside India. A ring of peaks around it forms a sanctuary so hard to enter that nobody reached it until 1934. In 1965 a secret Indian–American mission lost a nuclear-powered spying device on its slopes in a storm, and it has never been found."},
+{id:"haridwar",n:"Haridwar",t:"city",r:35,p:[[29.95,78.16]],s:"Haridwar means 'Gateway to God'. This is where the Ganga leaves the Himalaya and enters the plains. Every evening thousands gather at Har ki Pauri for the Ganga aarti and float little leaf-boats of flowers and lamps on the river. It is one of the four places that host the Kumbh Mela."},
+{id:"tehri",n:"Tehri Dam",t:"dam",r:35,p:[[30.378,78.48]],s:"Tehri Dam, about 260 metres high, is one of the tallest dams in Asia. When its reservoir filled, it drowned the old town of Tehri, once the capital of a princely state. Its people were moved to New Tehri, built on the hills above the water."},
+{id:"mussoorie",n:"Mussoorie & the Doon Valley",t:"hills",r:35,p:[[30.46,78.07]],s:"Mussoorie, the 'Queen of the Hills', became a hill station in the 1820s. Sir George Everest, the surveyor the world's highest mountain is named after, lived here, and his house still stands. Below, Dehradun is home to the Forest Research Institute and the Indian Military Academy."},
+{id:"shimla",n:"Shimla",t:"city",r:40,p:[[31.104,77.173]],s:"From 1864, Shimla was the summer capital of British India. Every year the whole government packed up and moved into these hills. The Kalka–Shimla railway, opened in 1903, winds through more than a hundred tunnels and is a UNESCO World Heritage Site."},
+{id:"chandigarh",n:"Chandigarh",t:"city",r:35,p:[[30.733,76.779]],s:"Chandigarh was designed in the 1950s by the architect Le Corbusier as a new capital for Punjab after Partition. Nearby, a road inspector named Nek Chand secretly built a garden of sculptures from broken tiles, bangles and waste. Today his Rock Garden welcomes thousands of visitors a day."},
+{id:"bhakra",n:"Bhakra Dam & Gobind Sagar",t:"dam",r:35,p:[[31.41,76.43]],s:"Bhakra Dam on the Sutlej, completed in 1963, is one of the tallest concrete gravity dams in the world, and its lake is called Gobind Sagar. Jawaharlal Nehru famously called dams like this the new temples of India."},
+{id:"dhauladhar",n:"Dhauladhar Range",t:"range",r:90,p:[[32.25,76.4],[32.6,76.0]],s:"The Dhauladhar, or 'White Range', rises sharply out of the Kangra valley. At its foot sits Dharamshala, which has been home to the Dalai Lama and the Tibetan government-in-exile since 1960."},
+{id:"goldentemple",n:"Amritsar & the Golden Temple",t:"city",r:35,p:[[31.62,74.876]],s:"Amritsar's Harmandir Sahib, the Golden Temple, sits in the middle of a sacred pool. Its community kitchen, the langar, serves free meals to anyone of any faith, often tens of thousands of people a day, all cooked and served by volunteers."},
+{id:"dal",n:"Srinagar & Dal Lake",t:"lake",r:35,p:[[34.11,74.87]],s:"Srinagar's Dal Lake is famous for its wooden houseboats, floating gardens and shikara boats. The Mughal emperor Jahangir loved Kashmir so much that he called it paradise on earth, and his Shalimar Bagh garden still steps down towards the lake."},
+{id:"pirpanjal",n:"Pir Panjal Range",t:"range",r:80,p:[[33.4,74.9],[33.6,74.4]],s:"The Pir Panjal range separates the Kashmir Valley from Jammu. Since 2025, trains have run all the way to Srinagar, through long tunnels and across the Chenab bridge, the world's highest railway arch bridge."},
+{id:"leh",n:"Leh & the Indus",t:"city",r:50,p:[[34.16,77.58]],s:"The Indus river flows past Leh, and it gave India its name. 'Sindhu' in Sanskrit became 'Hindu' in Persian and 'Indos' in Greek. Leh Palace, nine storeys high, was built in the 17th century and is often compared to the Potala Palace in Lhasa."},
+{id:"rashtrapati",n:"Raisina Hill, New Delhi",t:"monument",r:20,p:[[28.614,77.199]],s:"Rashtrapati Bhavan, the President's house, was designed by Edwin Lutyens after the British moved their capital from Calcutta to Delhi in 1911. It took about 17 years to build and has roughly 340 rooms. It opened as the Viceroy's House; since 1950 it has been home to India's Presidents."},
+{id:"qutub",n:"Qutub Minar, Mehrauli",t:"monument",r:20,p:[[28.524,77.185]],s:"Mehrauli is home to the Qutub Minar, a 73-metre tower begun around 1199 by Qutb-ud-din Aibak and finished by his successors. In the same courtyard stands an iron pillar more than 1,600 years old that has barely rusted, thanks to a thin protective layer that formed on its unusual iron."},
+{id:"yamuna",n:"Yamuna River",t:"river",r:20,p:[[28.7,77.25],[27.9,77.6],[27.1,78.6],[26.2,79.8]],s:"The Yamuna rises at the Yamunotri glacier in the Garhwal Himalaya and runs about 1,370 km before meeting the Ganga at Prayagraj. Delhi, Mathura, Vrindavan and Agra all grew up on its banks. The Taj Mahal was built on a bend of the river so it could be seen from the water and the far bank."},
+{id:"taj",n:"Agra & the Taj Mahal",t:"monument",r:30,p:[[27.175,78.042]],s:"Shah Jahan began the Taj Mahal in 1632, the year after his wife Mumtaz Mahal died. Around 20,000 artisans worked on it for about two decades, and white marble came from Makrana in Rajasthan. The four minarets lean very slightly outward, so that in an earthquake they would fall away from the tomb."},
+{id:"mathura",n:"Mathura & Vrindavan",t:"city",r:25,p:[[27.49,77.67]],s:"By tradition, Krishna was born in a prison cell in Mathura and grew up as a cowherd in the forests of nearby Vrindavan. At Holi these towns hold some of India's wildest celebrations, including Lathmar Holi in Barsana, where women playfully chase men away with sticks."},
+{id:"gwalior",n:"Gwalior Fort",t:"fort",r:30,p:[[26.23,78.169]],s:"Gwalior Fort sits on a sandstone plateau about 100 metres above the town. The emperor Babur called it the pearl among the fortresses of India. A small 9th-century temple inside carries one of the oldest known written zeros in the world, in the number 270."},
+{id:"chambal",n:"Chambal Ravines",t:"land",r:40,p:[[26.55,78.2],[26.2,77.2]],s:"The Chambal river has carved a maze of ravines here that once hid famous dacoits. Because people stayed away, the Chambal is now one of India's cleanest rivers and the last stronghold of the gharial, a thin-snouted crocodile found almost nowhere else in the world."},
+{id:"jhansi",n:"Jhansi",t:"fort",r:30,p:[[25.457,78.576]],s:"In 1858 Rani Lakshmibai defended Jhansi fort against British forces. When it fell, the story goes, she escaped on horseback with her adopted son tied to her back. She died in battle near Gwalior a few months later and became one of the great heroes of the 1857 uprising."},
+{id:"khajuraho",n:"Khajuraho",t:"monument",r:30,p:[[24.852,79.934]],s:"The Chandela kings built about 85 temples at Khajuraho between roughly 950 and 1050 CE, and about 25 survive. Their carvings show war, music, daily life and love. Hidden in the forest, they were largely forgotten until a British surveyor was guided to them in 1838."},
+{id:"lucknow",n:"Lucknow",t:"city",r:35,p:[[26.857,80.945]],s:"Lucknow is the city of the Nawabs. In 1784, during a terrible famine, Nawab Asaf-ud-Daula began the Bara Imambara to give people work. A popular story says ordinary labourers built by day, while nobles too proud to be seen working were paid at night to pull part of it down, so the work and the wages would last."},
+{id:"ganga",n:"The Ganga",t:"river",r:25,p:[[27.2,79.9],[26.45,80.35],[25.5,82.5],[25.6,84.5],[25.3,87.0]],s:"The Ganga flows about 2,500 km from the Gangotri glacier to the Bay of Bengal, and its basin supports more than 400 million people, one of the most crowded river basins on Earth. From the air, look for wide silver bends and sandbars that change shape every monsoon."},
+{id:"prayagraj",n:"Prayagraj — the Sangam",t:"city",r:35,p:[[25.424,81.885]],s:"At Prayagraj the brown Ganga meets the greener Yamuna, and tradition adds a third, invisible river, the Saraswati. Every 12 years the Kumbh Mela turns the riverbanks into a temporary city. The 2025 Maha Kumbh drew hundreds of millions of pilgrims over six weeks, one of the largest human gatherings ever recorded."},
+{id:"varanasi",n:"Varanasi",t:"city",r:35,p:[[25.31,83.01]],s:"Varanasi is one of the oldest continuously inhabited cities in the world. More than 80 ghats step down into the Ganga. At Manikarnika ghat, cremation fires are said to have burned almost without stopping for centuries, because dying here is believed to free the soul from rebirth."},
+{id:"sarnath",n:"Sarnath",t:"monument",r:20,p:[[25.381,83.021]],s:"At Sarnath, near Varanasi, the Buddha gave his first sermon in a deer park about 2,500 years ago. Emperor Ashoka later put up a pillar here topped with four lions. That Lion Capital is now India's national emblem, and its wheel sits at the centre of the national flag."},
+{id:"bodhgaya",n:"Bodh Gaya",t:"monument",r:30,p:[[24.696,84.991]],s:"At Bodh Gaya, Siddhartha Gautama sat under a pipal tree and meditated until he became the Buddha. The tree here today is believed to descend from the original. A cutting was taken to Sri Lanka in the 3rd century BCE, and a sapling from that tree was later brought back."},
+{id:"nalanda",n:"Nalanda",t:"monument",r:30,p:[[25.136,85.443]],s:"From the 5th century CE, Nalanda was one of the world's first great residential universities, with students from China, Korea and Central Asia. The Chinese traveller Xuanzang studied here. Around 1193 it was attacked and burned, and accounts say its library smouldered for months."},
+{id:"patna",n:"Patna (Pataliputra)",t:"city",r:35,p:[[25.6,85.14]],s:"Patna was once Pataliputra, capital of the Maurya empire more than 2,300 years ago. The Greek envoy Megasthenes described a huge city with timber walls and hundreds of towers. Chandragupta Maurya and his grandson Ashoka ruled most of the subcontinent from here."},
+{id:"kurukshetra",n:"Kurukshetra & Panipat",t:"land",r:35,p:[[29.97,76.85],[29.39,76.97]],s:"Kurukshetra is where, in the Mahabharata, Krishna spoke the Bhagavad Gita to Arjuna before the great battle. Just south, the plains of Panipat saw three battles that changed India's history, in 1526, 1556 and 1761."},
+{id:"ayodhya",n:"Ayodhya",t:"city",r:35,p:[[26.80,82.20]],s:"Ayodhya, on the Sarayu river, is honoured as the birthplace of Lord Ram and the capital of his kingdom in the Ramayana. The grand Ram temple here was consecrated in January 2024."},
+{id:"lumbini",n:"Lumbini & Kushinagar",t:"monument",r:45,p:[[27.48,83.28],[26.74,83.89]],s:"Just across the border in Nepal is Lumbini, where the Buddha was born, and in India nearby is Kushinagar, where he died. Bodh Gaya, where he found enlightenment, and Sarnath, where he first taught, are also in this region, so this part of the plains holds the whole story of his life."},
+{id:"dudhwa",n:"Dudhwa & the Terai",t:"forest",r:40,p:[[28.5,80.6]],s:"Along the Nepal border runs the Terai, a belt of tall grassland and sal forest at the foot of the Himalaya. Dudhwa National Park here shelters tigers, rhinos and swamp deer."},
+{id:"champaran",n:"Champaran",t:"land",r:40,p:[[27.0,84.8]],s:"In 1917 Gandhi came to Champaran to help indigo farmers forced by British planters to grow the crop. It was his first big satyagraha in India, and the start of his rise as the leader of the freedom movement."},
+{id:"mithila",n:"Mithila & the Kosi",t:"land",r:45,p:[[26.15,85.9],[26.5,86.9]],s:"This is Mithila, home of Madhubani painting, which women here have practised on walls and floors for generations. To the east, the Kosi river shifts its course so often and floods so badly that it is called the 'Sorrow of Bihar'."},
+{id:"farakka",n:"Farakka Barrage",t:"dam",r:35,p:[[24.81,87.92]],s:"Farakka Barrage, finished in 1975, sends part of the Ganga's water into the Hooghly river, because silt was choking the channel to Kolkata's port. Just downstream, the main river flows into Bangladesh, where it is called the Padma."},
+// ---- East & Northeast
+{id:"kolkata",n:"Kolkata & Howrah Bridge",t:"city",r:35,p:[[22.585,88.347]],s:"Kolkata was the capital of British India until 1911. Its Howrah Bridge, opened in 1943, was built without nuts and bolts; it is held together by rivets. It carries a huge flow of vehicles and people across the Hooghly every day."},
+{id:"sundarbans",n:"The Sundarbans",t:"forest",r:60,p:[[21.95,88.85]],s:"The Sundarbans, shared by India and Bangladesh, is the world's largest mangrove forest. Tides flood it twice a day, and its Bengal tigers swim between islands. Local fishermen and honey collectors pray to Bonbibi, the forest goddess, before going in."},
+{id:"darjeeling",n:"Darjeeling",t:"hills",r:40,p:[[27.04,88.26]],s:"Darjeeling's tea gardens cling to slopes as high as 2,000 metres. The Darjeeling Himalayan Railway, opened in 1881, climbs with loops and zig-zag reverses and is a UNESCO World Heritage Site. On a clear morning, Kanchenjunga fills the horizon."},
+{id:"siliguri",n:"The Siliguri Corridor",t:"land",r:40,p:[[26.72,88.43]],s:"This is the Siliguri Corridor, nicknamed the Chicken's Neck. At its narrowest it is only about 20 to 22 km wide, squeezed between Nepal, Bangladesh and Bhutan. Every road and railway linking the north-eastern states to the rest of India runs through it."},
+{id:"brahmaputra",n:"The Brahmaputra",t:"river",r:30,p:[[26.19,91.75],[26.7,93.0],[27.45,94.8]],s:"The Brahmaputra begins in Tibet as the Yarlung Tsangpo and cuts through the Himalaya in one of the deepest gorges on Earth before entering Assam. Near Guwahati it can be several kilometres wide. It is one of the few rivers in India with a male name."},
+{id:"kaziranga",n:"Kaziranga",t:"forest",r:40,p:[[26.58,93.17]],s:"Kaziranga is home to about two-thirds of the world's greater one-horned rhinos. Its grasslands flood every year with the Brahmaputra, and the animals move to raised mounds built for them."},
+{id:"majuli",n:"Majuli",t:"island",r:40,p:[[26.95,94.17]],s:"Majuli is one of the largest river islands in the world. It is the heart of Assamese Vaishnavism, with monasteries called satras going back to the saint Srimanta Sankardeva in the 16th century. River erosion has shrunk the island a lot over the past century."},
+{id:"cherrapunji",n:"Cherrapunji & Mawsynram",t:"hills",r:50,p:[[25.27,91.73]],s:"Cherrapunji and nearby Mawsynram, on the Meghalaya plateau, are among the wettest places on Earth; Mawsynram gets more than 11 metres of rain a year. Khasi villagers grow living bridges by guiding the roots of rubber fig trees across streams."},
+{id:"loktak",n:"Loktak Lake",t:"lake",r:30,p:[[24.55,93.80]],s:"Manipur's Loktak Lake is covered with phumdis, floating islands of plants and soil. Keibul Lamjao, the world's only floating national park, sits on them. It is the last home of the sangai, a 'dancing deer' found nowhere else."},
+{id:"chhotanagpur",n:"Chhota Nagpur Plateau",t:"land",r:60,p:[[23.4,85.3],[23.6,86.4]],s:"Below is the Chhota Nagpur plateau, India's mineral heartland, rich in coal and iron ore. Its rivers drop off the plateau's edge in waterfalls like Hundru, Dassam and Jonha near Ranchi."},
+{id:"jamshedpur",n:"Jamshedpur",t:"city",r:30,p:[[22.80,86.18]],s:"Jamsetji Tata dreamed of an Indian steel plant, and the Tata works here began making steel in 1912. Jamshedpur grew into one of India's first planned industrial cities."},
+{id:"bhubaneswar",n:"Bhubaneswar",t:"city",r:30,p:[[20.27,85.84]],s:"Bhubaneswar is called the Temple City; hundreds of temples once stood here, and the 11th-century Lingaraj is the grandest. Nearby, Emperor Ashoka's bloody war in Kalinga around 261 BCE made him turn to Buddhism."},
+{id:"puri",n:"Puri",t:"city",r:30,p:[[19.80,85.82]],s:"Every year at Puri's Jagannath temple, huge wooden chariots are pulled through the streets during the Rath Yatra. The English word 'juggernaut' comes from Jagannath."},
+{id:"konark",n:"Konark Sun Temple",t:"monument",r:30,p:[[19.887,86.095]],s:"The 13th-century Konark Sun Temple was built as a giant stone chariot for the sun god, with 24 carved wheels pulled by seven horses. The wheels work as sundials. Sailors called it the Black Pagoda and used it as a landmark."},
+{id:"chilika",n:"Chilika Lake",t:"lake",r:40,p:[[19.72,85.32]],s:"Chilika is Asia's largest brackish-water lagoon. In winter it hosts around a million migratory birds, some from as far as Siberia. Rare Irrawaddy dolphins live near its mouth."},
+{id:"hirakud",n:"Hirakud Dam",t:"dam",r:40,p:[[21.53,83.87]],s:"Hirakud Dam on the Mahanadi, finished in 1957, is one of the longest earthen dams in the world, about 25 km including its dykes. Its reservoir is one of the largest artificial lakes in Asia."},
+{id:"chitrakote",n:"Chitrakote Falls",t:"falls",r:30,p:[[19.21,81.70]],s:"Chitrakote Falls on the Indravati river in Bastar spreads about 300 metres wide in the monsoon. Its horseshoe shape has earned it the nickname 'the Niagara of India'."},
+// ---- Central India
+{id:"vindhya",n:"Vindhya Range",t:"range",r:40,p:[[23.4,76.5],[24.0,78.5],[24.6,80.5],[24.9,82.0]],s:"The Vindhya range is the traditional dividing line between north and south India. A legend says the Vindhyas grew so tall they blocked the sun, until the sage Agastya asked them to bow low until he returned from the south. He never came back, so they stayed low."},
+{id:"satpura",n:"Satpura Range",t:"range",r:40,p:[[21.8,75.0],[22.4,77.5],[22.5,78.4]],s:"The Satpura range, 'seven folds', runs parallel to the Vindhyas, south of the Narmada. Its forests at Pachmarhi, Satpura and Melghat shelter tigers, leopards and gaur, the Indian bison."},
+{id:"narmada",n:"The Narmada",t:"river",r:25,p:[[22.25,74.5],[22.7,76.5],[23.0,78.5]],s:"The Narmada is one of the few big Indian rivers that flows west, through a rift valley between the Vindhya and Satpura ranges to the Arabian Sea. Pilgrims walk the Narmada Parikrama, about 2,600 km along both banks, which can take months."},
+{id:"bhedaghat",n:"Bhedaghat Marble Rocks",t:"gorge",r:30,p:[[23.13,79.80]],s:"Near Jabalpur, the Narmada cuts through a gorge of marble cliffs about 30 metres high that glow white and pink in moonlight. Nearby, the Dhuandhar falls throw up spray like smoke, which is what 'dhuandhar' means."},
+{id:"sanchi",n:"Sanchi",t:"monument",r:25,p:[[23.48,77.74]],s:"Emperor Ashoka commissioned the Great Stupa at Sanchi in the 3rd century BCE. Its four carved gateways tell stories of the Buddha's life, but he is never shown as a person, only through symbols like a wheel, footprints or a tree."},
+{id:"bhimbetka",n:"Bhimbetka Rock Shelters",t:"monument",r:25,p:[[22.94,77.61]],s:"The Bhimbetka rock shelters hold paintings of hunters, dancers and animals, some possibly 10,000 years old or more. Archaeologist V. S. Wakankar rediscovered them in 1957 after spotting the strange rocks from a train window."},
+{id:"bhopal",n:"Bhopal",t:"city",r:30,p:[[23.25,77.34]],s:"Bhopal is the City of Lakes. Its Upper Lake was created in the 11th century, traditionally credited to King Bhoja, and is one of the oldest man-made lakes in India. It still supplies drinking water to the city."},
+{id:"ujjain",n:"Ujjain",t:"city",r:30,p:[[23.18,75.77]],s:"Ujjain was the prime meridian of ancient Indian astronomy, the zero line of longitude, the way Greenwich is today. It is home to the Mahakaleshwar temple and hosts the Simhastha Kumbh Mela every 12 years."},
+{id:"mandu",n:"Mandu",t:"fort",r:25,p:[[22.35,75.40]],s:"Mandu is a ruined hilltop city of palaces and lakes, famous for the love story of Sultan Baz Bahadur and the singer Rani Roopmati, whose pavilion looks out over the Narmada valley. Its Jahaz Mahal, between two lakes, looks like a ship at anchor."},
+{id:"indore",n:"Indore",t:"city",r:30,p:[[22.72,75.86]],s:"Indore has been ranked India's cleanest city in the national Swachh Survekshan survey year after year. It is also famous for Sarafa Bazaar, a jewellery market that turns into a street-food market every night."},
+{id:"pench",n:"Pench & the Jungle Book forests",t:"forest",r:35,p:[[21.7,79.3]],s:"The Seoni forests around Pench inspired Rudyard Kipling's The Jungle Book, the world of Mowgli, Baloo and Bagheera. Today Pench is a tiger reserve on the border of Madhya Pradesh and Maharashtra."},
+{id:"nagpur",n:"Nagpur — centre of India",t:"city",r:30,p:[[21.15,79.08]],s:"Nagpur is close to the geographic centre of India, and the British placed a Zero Mile Stone here for their survey. The city is famous for its oranges and is Maharashtra's winter capital."},
+// ---- West
+{id:"thar",n:"The Thar Desert",t:"desert",r:80,p:[[27.0,71.0],[26.0,71.5],[28.0,72.5]],s:"Below is the Thar Desert, covering more than 200,000 square km. Unlike most deserts it is fairly crowded with villages, and the Indira Gandhi Canal has turned parts of it green. Look for sand dunes lined up in long ridges, shaped by the south-west winds."},
+{id:"jaisalmer",n:"Jaisalmer",t:"fort",r:35,p:[[26.913,70.912]],s:"Jaisalmer's Golden Fort, built in 1156 from yellow sandstone, is one of the few 'living forts' in the world. Thousands of people still live inside its walls."},
+{id:"jodhpur",n:"Jodhpur & Mehrangarh",t:"fort",r:35,p:[[26.298,73.018]],s:"Jodhpur, the Blue City, was founded by Rao Jodha in 1459. Mehrangarh Fort rises about 120 metres above it on a cliff. Many old-town houses are painted blue; some say it marked Brahmin homes, others that it keeps houses cool."},
+{id:"jaipur",n:"Jaipur",t:"city",r:35,p:[[26.924,75.824]],s:"Sawai Jai Singh II founded Jaipur in 1727 as one of India's first planned cities, laid out in a grid. It was painted pink to welcome the Prince of Wales in 1876. Jai Singh's Jantar Mantar has a giant sundial that tells local time to within a couple of seconds."},
+{id:"sambhar",n:"Sambhar Salt Lake",t:"lake",r:35,p:[[26.97,75.08]],s:"Sambhar is India's largest inland salt lake. Salt has been harvested here for centuries, and in winter thousands of flamingos wade in its shallow water."},
+{id:"pushkar",n:"Pushkar & Ajmer",t:"city",r:30,p:[[26.49,74.6]],s:"Pushkar has one of the very few temples in the world dedicated to Brahma, the creator. Each year its camel fair brings huge crowds of camels and traders to the dunes. Next door, Ajmer is home to the shrine of the Sufi saint Moinuddin Chishti."},
+{id:"aravalli",n:"Aravalli Range",t:"range",r:45,p:[[24.6,73.0],[25.5,73.8],[26.8,75.5],[27.8,76.3]],s:"The Aravallis are among the oldest mountain ranges on Earth, worn down over more than a billion years into rocky ridges. They act as a wall that slows the Thar Desert's spread towards Delhi. Their highest point, Guru Shikhar near Mount Abu, is 1,722 metres."},
+{id:"mountabu",n:"Mount Abu",t:"hills",r:30,p:[[24.593,72.708]],s:"Mount Abu is Rajasthan's only hill station. Its Dilwara Jain temples, built between the 11th and 13th centuries, are carved from white marble so finely that some ceilings look like lace."},
+{id:"udaipur",n:"Udaipur",t:"city",r:30,p:[[24.576,73.683]],s:"Udaipur, the City of Lakes, was founded by Maharana Udai Singh II in 1559. Its Lake Palace seems to float on Lake Pichola. Built as a summer palace in the 1740s, it is now a hotel and appeared in the James Bond film Octopussy."},
+{id:"chittorgarh",n:"Chittorgarh",t:"fort",r:30,p:[[24.887,74.646]],s:"Chittorgarh is one of the largest forts in India, spread over a long hilltop. It was besieged three times, and the stories of Rani Padmini became Rajput legend. Its nine-storey Vijay Stambh, the Victory Tower, still stands."},
+{id:"ranthambore",n:"Ranthambore",t:"forest",r:30,p:[[26.02,76.50]],s:"In Ranthambore, tigers walk among ruined pavilions below a 10th-century fort. Once a hunting ground of the Jaipur maharajas, it is now one of the best places in the world to see wild tigers."},
+{id:"kota",n:"Kota & the Chambal",t:"city",r:30,p:[[25.18,75.83]],s:"Kota, on the Chambal river, is known across India as the coaching capital, where lakhs of students prepare for engineering and medical entrance exams. Upstream, the Chambal flows through a deep gorge lined with dams."},
+{id:"kutch",n:"Rann of Kutch",t:"desert",r:100,p:[[23.9,70.2],[23.8,69.0]],s:"The Great Rann of Kutch is one of the largest salt deserts in the world. In the monsoon it floods; when it dries, it leaves a dazzling white crust that stretches to the horizon. Wild asses roam the Little Rann, and the full-moon nights of the Rann Utsav festival are famous."},
+{id:"alang",n:"Alang & the Gulf of Khambhat",t:"coast",r:50,p:[[21.40,72.18]],s:"Alang, on the Gulf of Khambhat, is one of the world's largest ship-breaking yards. Giant ships are run aground at high tide and taken apart, largely by hand. The gulf has some of the biggest tides in India."},
+{id:"unity",n:"Statue of Unity",t:"monument",r:40,p:[[21.838,73.719]],s:"The Statue of Unity, 182 metres tall, is the tallest statue in the world, about twice the height of the Statue of Liberty. It honours Sardar Vallabhbhai Patel, who brought more than 560 princely states into India, and faces the Sardar Sarovar Dam on the Narmada."},
+{id:"ahmedabad",n:"Ahmedabad & Sabarmati",t:"city",r:30,p:[[23.061,72.581]],s:"Gandhi set up his ashram on the banks of the Sabarmati here, and in 1930 he set out from it on the Salt March to Dandi, about 390 km away. In 2017 Ahmedabad became India's first UNESCO World Heritage City."},
+{id:"gir",n:"Gir Forest",t:"forest",r:40,p:[[21.13,70.82]],s:"Gir is the last home of the wild Asiatic lion. A little over a century ago only a few dozen survived. Today there are several hundred in Gir and the land around it, one of conservation's great comeback stories."},
+{id:"somnath",n:"Somnath",t:"monument",r:30,p:[[20.888,70.401]],s:"Somnath temple stands on the shore of the Arabian Sea. A pillar here, the Baan Stambh, says there is no land in a straight line between this spot and the South Pole. The temple was destroyed and rebuilt many times; the present one was finished in 1951."},
+{id:"surat",n:"Surat",t:"city",r:30,p:[[21.17,72.83]],s:"Surat is the world's diamond-cutting capital; by most estimates the large majority of the world's diamonds are cut and polished here. Centuries ago it was the Mughal empire's busiest port."},
+{id:"mumbai",n:"Mumbai",t:"city",r:35,p:[[18.94,72.83]],s:"Mumbai was once seven islands. In 1661 Portugal handed Bombay to England as part of the dowry when Catherine of Braganza married King Charles II. Land reclamation later joined the islands into the city you see today."},
+{id:"elephanta",n:"Elephanta Island",t:"monument",r:25,p:[[18.963,72.931]],s:"Elephanta Island in Mumbai harbour has rock-cut caves with a giant three-faced Shiva, carved around the 6th century. The Portuguese named the island after a stone elephant they found near the landing."},
+{id:"bhorghat",n:"Bhor Ghat",t:"pass",r:30,p:[[18.78,73.37]],s:"In 1863 the railway climbed these cliffs between Mumbai and Pune using tunnels and a zig-zag reversing station, and thousands of labourers died building it. Today the Mumbai–Pune Expressway, India's first six-lane expressway, climbs through the same pass."},
+{id:"pune",n:"Pune",t:"city",r:30,p:[[18.519,73.855]],s:"Pune was the seat of the Peshwas, who ran the Maratha empire from the Shaniwar Wada palace in the 18th century. Today it is called the 'Oxford of the East' for its many colleges."},
+{id:"sinhagad",n:"Sinhagad Fort",t:"fort",r:25,p:[[18.366,73.755]],s:"In 1670 Tanaji Malusare climbed the cliffs of this fort at night to capture it for Shivaji. Legend says his men used a monitor lizard named Yashwanti to help them climb. Tanaji died in the battle, and Shivaji is said to have mourned that the fort was won but the lion was lost. That is why it is called Sinhagad, the Lion Fort."},
+{id:"lonar",n:"Lonar Crater",t:"crater",r:30,p:[[19.976,76.508]],s:"Lonar crater, about 1.8 km across, was made when a meteorite hit the Deccan lava plain tens of thousands of years ago. The lake inside is salty and alkaline, and in 2020 it suddenly turned pink; scientists traced it to salt-loving microbes."},
+{id:"ajanta",n:"Ajanta Caves",t:"monument",r:30,p:[[20.552,75.70]],s:"Ajanta has about 30 Buddhist caves cut into a horseshoe-shaped cliff, with some of the finest surviving paintings of ancient India. Forgotten for centuries, they were found again in 1819 when a British officer hunting a tiger spotted a cave mouth."},
+{id:"ellora",n:"Ellora Caves",t:"monument",r:30,p:[[20.026,75.178]],s:"Ellora has 34 caves of Buddhist, Hindu and Jain faith side by side. The Kailasa temple was carved top-down out of a single rock, and workers removed an estimated 200,000 tonnes of stone with no room for mistakes."},
+{id:"aurangabad",n:"Aurangabad (Chhatrapati Sambhajinagar)",t:"city",r:25,p:[[19.901,75.320]],s:"The Bibi ka Maqbara here was built around 1660 by Aurangzeb's son for his mother. It looks so much like the Taj Mahal that it is called the 'Taj of the Deccan'."},
+{id:"deccan",n:"The Deccan Traps",t:"land",r:110,p:[[18.5,75.5],[20.5,77.5]],s:"Below is the Deccan Traps, layers of volcanic basalt more than a kilometre thick, poured out about 66 million years ago, around the time the dinosaurs died out. The flat-topped hills and step-like slopes you see are the edges of ancient lava flows."},
+{id:"ghats",n:"The Western Ghats",t:"range",r:55,p:[[19.5,73.6],[17.5,73.8],[15.5,74.1],[13.5,75.2],[11.5,76.0],[10.0,77.1]],s:"The Western Ghats, or Sahyadri, run about 1,600 km along India's west coast and are older than the Himalaya. They catch the monsoon clouds, soaking the coast and leaving the land to the east drier. They are one of the world's biodiversity hotspots, full of species found nowhere else."},
+{id:"konkan",n:"The Konkan Coast",t:"coast",r:40,p:[[17.0,73.3],[16.0,73.5]],s:"Below is the Konkan coast, squeezed between the Sahyadri hills and the sea. The Konkan Railway, opened in 1998, runs about 740 km through roughly 90 tunnels and nearly 2,000 bridges, one of the toughest railways ever built in India."},
+// ---- South
+{id:"goa",n:"Goa",t:"city",r:35,p:[[15.50,73.91]],s:"Portugal ruled Goa for 451 years, from 1510 until 1961. The Basilica of Bom Jesus in Old Goa holds the remains of St Francis Xavier. Goa is India's smallest state by area."},
+{id:"dudhsagar",n:"Dudhsagar Falls",t:"falls",r:25,p:[[15.318,74.314]],s:"Dudhsagar, the 'Sea of Milk', drops about 310 metres in four tiers on the Goa–Karnataka border. A railway line runs right across the face of the falls, and in the monsoon trains slow down so passengers can look."},
+{id:"jog",n:"Jog Falls",t:"falls",r:25,p:[[14.229,74.812]],s:"At Jog Falls the Sharavathi river plunges about 253 metres in four streams called Raja, Rani, Roarer and Rocket. In the monsoon it is one of India's most spectacular waterfalls."},
+{id:"murudeshwar",n:"Murudeshwar",t:"monument",r:30,p:[[14.094,74.485]],s:"At Murudeshwar a giant Shiva statue, about 37 metres tall, sits on a headland by the Arabian Sea, next to a 20-storey temple tower. It is one of the tallest Shiva statues in the world."},
+{id:"chikmagalur",n:"Chikkamagaluru coffee hills",t:"hills",r:30,p:[[13.32,75.77]],s:"India's coffee story begins here. Around 1670, the Sufi saint Baba Budan is said to have smuggled seven coffee beans out of Yemen and planted them on these hills."},
+{id:"hampi",n:"Hampi",t:"monument",r:30,p:[[15.335,76.46]],s:"Hampi was Vijayanagara, capital of a great empire. Around 1500 it was one of the biggest and richest cities in the world; foreign travellers described markets selling gems in heaps. It was sacked in 1565, and its ruins now lie among giant granite boulders."},
+{id:"badami",n:"Badami, Aihole & Pattadakal",t:"monument",r:30,p:[[15.92,75.68]],s:"From the 6th century, Chalukya builders experimented with temple styles at Badami, Aihole and Pattadakal. That is why Aihole is often called the cradle of Indian temple architecture."},
+{id:"golgumbaz",n:"Gol Gumbaz, Vijayapura",t:"monument",r:30,p:[[16.83,75.736]],s:"Gol Gumbaz, a tomb finished around 1656, has one of the largest domes in the world. In its Whispering Gallery a whisper carries clearly to the far side, and a single clap echoes several times."},
+{id:"mysuru",n:"Mysuru",t:"city",r:30,p:[[12.305,76.655]],s:"Mysuru Palace is lit with nearly 100,000 bulbs on Sunday evenings and during Dasara, when a decorated elephant carries the goddess Chamundeshwari through the city in a golden howdah."},
+{id:"srirangapatna",n:"Srirangapatna",t:"fort",r:25,p:[[12.42,76.69]],s:"Srirangapatna, an island in the Kaveri, was Tipu Sultan's capital. His army used iron-cased rockets against the British. Captured rockets were studied in England and led to the Congreve rocket."},
+{id:"bengaluru",n:"Bengaluru",t:"city",r:30,p:[[12.97,77.59]],s:"Bengaluru, the Garden City, is now India's tech capital. In the early 1900s it was among the first cities in Asia to get electric street lights, powered by a hydroelectric station on the Kaveri. Its Lalbagh garden was begun by Hyder Ali in the 1760s."},
+{id:"nandi",n:"Nandi Hills",t:"hills",r:25,p:[[13.37,77.68]],s:"Nandi Hills, near Bengaluru airport, is where several rivers begin, including the Arkavathi and the Penna. Tipu Sultan used it as a summer retreat, and a cliff here is still called Tipu's Drop."},
+{id:"lepakshi",n:"Lepakshi",t:"monument",r:25,p:[[13.80,77.61]],s:"Lepakshi's 16th-century Veerabhadra temple has a 'hanging pillar' whose base barely touches the floor; visitors slide a cloth underneath it. Nearby is one of India's largest stone Nandi bulls, carved from a single rock."},
+{id:"kaveri",n:"The Kaveri",t:"river",r:25,p:[[12.12,77.78],[11.8,77.8],[10.85,78.7]],s:"The Kaveri rises in Kodagu in the Western Ghats and flows east to the Bay of Bengal. Its water is so precious that Karnataka and Tamil Nadu have argued over it for more than a century. At Hogenakkal falls, boatmen ferry visitors in round coracles."},
+{id:"nilgiris",n:"The Nilgiris & Ooty",t:"hills",r:50,p:[[11.41,76.70]],s:"The Nilgiris are the 'Blue Mountains'. Every 12 years the slopes turn blue-violet when the neelakurinji shrub flowers. The Nilgiri Mountain Railway uses a toothed rack to climb to Ooty and is a UNESCO World Heritage Site."},
+{id:"palakkad",n:"The Palakkad Gap",t:"pass",r:40,p:[[10.77,76.65]],s:"The Palakkad Gap is a 30 to 40 km wide break in the Western Ghats. Winds and rain funnel through it, and the main road and railway into Kerala run through it too."},
+{id:"kochi",n:"Kochi",t:"city",r:30,p:[[9.965,76.24]],s:"Kochi has been a spice port for centuries, visited by Arab, Chinese, Portuguese, Dutch and British traders. Vasco da Gama died here in 1524 and was first buried in St Francis Church. Its Chinese fishing nets still dip into the harbour."},
+{id:"vembanad",n:"Vembanad & the backwaters",t:"lake",r:40,p:[[9.6,76.38]],s:"Vembanad is the longest lake in India. In nearby Kuttanad, farmers grow rice below sea level, one of very few places in the world where that happens. Every August, snake boats with around a hundred rowers race on these waters."},
+{id:"anamudi",n:"Anamudi & Munnar",t:"peak",r:60,p:[[10.17,77.06]],s:"Anamudi, 2,695 metres, is the highest peak in India south of the Himalaya. Around it lie Munnar's tea estates and Eravikulam National Park, home of the rare Nilgiri tahr, a mountain goat."},
+{id:"kodaikanal",n:"Kodaikanal",t:"hills",r:30,p:[[10.23,77.49]],s:"Kodaikanal, the 'Princess of Hill Stations', was founded in 1845 by American missionaries escaping the heat of the plains. Its star-shaped lake was created in 1863."},
+{id:"madurai",n:"Madurai",t:"city",r:30,p:[[9.919,78.119]],s:"Madurai has grown around the Meenakshi Amman temple for well over 2,000 years. Its 14 gopuram towers are covered with thousands of painted figures, and the old city is laid out in squares around the temple."},
+{id:"thanjavur",n:"Thanjavur",t:"monument",r:30,p:[[10.783,79.132]],s:"Thanjavur's Brihadeeswarar temple was finished around 1010 CE by Raja Raja Chola. Its tower is about 66 metres high and is topped by a huge stone capstone. Legend says it was dragged up a ramp several kilometres long."},
+{id:"kanyakumari",n:"Kanyakumari",t:"coast",r:40,p:[[8.078,77.541]],s:"Kanyakumari is India's southern tip, where the Arabian Sea, the Bay of Bengal and the Indian Ocean meet. Swami Vivekananda meditated on a rock offshore in 1892, and a 41-metre statue of the Tamil poet Thiruvalluvar stands beside it."},
+{id:"rameswaram",n:"Rameswaram & Pamban",t:"coast",r:40,p:[[9.28,79.21]],s:"The 1914 Pamban bridge was India's first sea bridge, and a new vertical-lift railway bridge opened beside it in 2025. Beyond Rameswaram, a chain of shoals called Ram Setu, or Adam's Bridge, stretches towards Sri Lanka."},
+{id:"chennai",n:"Chennai",t:"city",r:30,p:[[13.08,80.285]],s:"In 1644 the English East India Company finished Fort St George here, its first fortress in India, and the city grew around it. The Marina is one of the longest city beaches in the world."},
+{id:"mahabalipuram",n:"Mamallapuram",t:"monument",r:25,p:[[12.617,80.199]],s:"In the 7th and 8th centuries, Pallava sculptors carved temples and huge reliefs out of the coastal rock at Mamallapuram. The Shore Temple has faced the Bay of Bengal for about 1,300 years."},
+{id:"puducherry",n:"Puducherry",t:"city",r:30,p:[[11.934,79.83]],s:"Puducherry was the capital of French India until 1954. Its old town still has French street names and yellow villas, and Auroville, an experimental township founded in 1968, lies just to the north."},
+{id:"sriharikota",n:"Sriharikota & Pulicat Lake",t:"coast",r:40,p:[[13.72,80.23]],s:"The thin island between Pulicat Lake and the sea is Sriharikota, India's spaceport. Chandrayaan-3, which landed near the Moon's south pole in 2023, launched from here. Pulicat is India's second-largest brackish lagoon, and flamingos spend the winter on it."},
+{id:"tirupati",n:"Tirumala & Tirupati",t:"monument",r:30,p:[[13.683,79.347]],s:"The Venkateswara temple at Tirumala is one of the most visited and richest temples in the world. Many pilgrims offer their hair here, and the temple auctions it to wig makers around the world."},
+{id:"hyderabad",n:"Hyderabad",t:"city",r:30,p:[[17.361,78.474]],s:"Muhammad Quli Qutb Shah built the Charminar in 1591 when he founded Hyderabad. Next door, Golconda was once the world's great diamond market; legendary stones like the Koh-i-Noor came from mines in the Golconda kingdom."},
+{id:"nagarjunasagar",n:"Nagarjuna Sagar",t:"dam",r:40,p:[[16.575,79.312]],s:"Nagarjuna Sagar Dam on the Krishna, completed in the late 1960s, is one of the largest stone masonry dams in the world. When the valley flooded, ancient Buddhist monuments were moved to an island in the reservoir."},
+{id:"krishna",n:"The Krishna",t:"river",r:25,p:[[16.85,74.57],[16.3,77.3],[16.2,78.2],[16.51,80.60]],s:"The Krishna runs about 1,400 km from Mahabaleshwar in the Western Ghats to the Bay of Bengal. Together with the Godavari, its delta makes up the 'rice bowl' of Andhra Pradesh."},
+{id:"godavari",n:"The Godavari",t:"river",r:25,p:[[19.9,74.5],[19.1,77.3],[18.8,79.4],[17.8,81.0],[17.0,81.78]],s:"The Godavari, often called the Dakshin Ganga, is the second-longest river in India at about 1,465 km. Near Rajahmundry it spreads several kilometres wide and is crossed by long road and rail bridges."},
+{id:"easternghats",n:"The Eastern Ghats",t:"range",r:40,p:[[18.2,82.9],[16.0,79.2],[14.0,78.8]],s:"The Eastern Ghats are a broken chain of old hills running down India's east coast, cut through by the Mahanadi, Godavari, Krishna and Kaveri. In the Araku Valley, tribal farmers grow coffee on these slopes."},
+{id:"vizag",n:"Visakhapatnam",t:"city",r:30,p:[[17.70,83.30]],s:"Visakhapatnam is home to the Indian Navy's Eastern Command. A real submarine, INS Kursura, sits on the beach as a museum, and the headland called Dolphin's Nose rises about 170 metres above the harbour."},
+// ---- Seas & islands
+{id:"bayofbengal",n:"Bay of Bengal",t:"sea",r:150,p:[[15,88],[13,90],[17,86.5],[11.5,87]],s:"Below is the Bay of Bengal, the largest bay in the world. Its surface water is less salty than most seas because the Ganga, Brahmaputra, Godavari and other rivers pour in so much fresh water. Some of the world's strongest cyclones form here."},
+{id:"arabiansea",n:"Arabian Sea",t:"sea",r:70,p:[[18,71.5],[14,72.5],[11,74.5]],s:"For more than 2,000 years, traders sailed the Arabian Sea using the monsoon winds: the south-west winds carried ships to India in summer, and the north-east winds took them home in winter. Roman ships came this way for Indian pepper."},
+{id:"portblair",n:"Port Blair",t:"city",r:30,p:[[11.67,92.75]],s:"Port Blair's Cellular Jail, finished in 1906, held Indian freedom fighters in solitary cells; being sent here was called 'Kala Pani'. In 1943 Subhas Chandra Bose raised the Indian tricolour in Port Blair."},
+{id:"barren",n:"Barren Island volcano",t:"island",r:70,p:[[12.278,93.858]],s:"Barren Island in the Andaman Sea is India's only confirmed active volcano, and it has erupted several times since 1991. Apart from seabirds, a small population of feral goats is about the only life on it."}
+];
+
+// Lines crossed in flight
+const LINES = [
+{id:"tropic",n:"Tropic of Cancer",kind:"lat",v:23.44,s:"You're crossing the Tropic of Cancer, about 23.4 degrees north. On the June solstice the noon sun stands directly overhead along this line. It runs through eight Indian states, from Gujarat in the west to Mizoram in the east."},
+{id:"ist",n:"The Indian Standard Time line (82.5° E)",kind:"lon",v:82.5,s:"You're crossing 82.5 degrees east, the line India sets its clocks by. Indian Standard Time is the sun time along this line, which passes near Mirzapur in Uttar Pradesh. India is so wide that the sun rises almost two hours earlier in Arunachal Pradesh than in Kutch."}
+];
+
+// ECHOES — story layer. For each place: h = hook (shown first), e = echo (phrase for the landing journal), k = takeaway.
+// Full rewrites (FULL) replace the base story with the 5-part structure: ctx, s (story), k, l (look for), d (deeper).
+const HOOKS = {
+everest:["Somewhere on the horizon may be the highest point on Earth.","a glimpse of the roof of the world","Its height was first worked out by people who never climbed it."],
+kanchenjunga:["The first climbers stopped just short of the top, on purpose.","a summit left untouched by a promise","Some summits are kept, not conquered."],
+nandadevi:["A nuclear device was lost on this mountain in 1965. It was never found.","a mountain keeping a secret","The mountains keep their secrets well."],
+haridwar:["This is where the Ganga leaves the mountains for good.","the gateway where the Ganga meets the plains","Every evening, thousands of small lights float away on the river."],
+tehri:["A whole town lies beneath the lake down there.","a town beneath a lake","Progress here came at the cost of a home."],
+mussoorie:["The man the world's highest mountain is named after lived on these hills.","the hills where Everest's namesake lived","He gave his name to a mountain he never saw."],
+shimla:["Every summer, an entire government packed up and moved into these hills.","a summer capital in the clouds","Power once followed the cool air uphill."],
+chandigarh:["A road inspector secretly built a kingdom out of broken things here.","a garden made of broken things","Nothing is waste in the right hands."],
+bhakra:["Nehru called dams like this one the new temples of India.","a 'temple of modern India'","Every era builds its own temples."],
+dhauladhar:["These white mountains became home to a leader in exile.","the white range that sheltered an exile","Some homes are found far from where you began."],
+goldentemple:["Below is a kitchen that feeds anyone who walks in, every day.","a kitchen that feeds everyone","Generosity, repeated daily, becomes a city's heartbeat."],
+dal:["An emperor looked at this valley and called it paradise.","an emperor's paradise","Some places leave even emperors lost for words."],
+pirpanjal:["The world's highest railway arch bridge is hidden in these mountains.","the mountains a railway finally crossed","Some journeys took a century to become possible."],
+leh:["The river flowing past Leh gave India its name.","the river that named India","A country's name can begin with a river."],
+rashtrapati:["A house of about 340 rooms was built for an empire that soon left.","a palace built for an empire that left","Buildings outlast the reasons they were built."],
+qutub:["An iron pillar down there has barely rusted in 1,600 years.","an iron pillar that refuses to rust","Some ancient craft still puzzles us."],
+yamuna:["One river connects Delhi, Mathura and the Taj Mahal.","the river that holds the Taj's reflection","Cities come and go. The river remains."],
+taj:["Its four towers lean outward, very slightly, on purpose.","a love story in marble","Even grief can be engineered with care."],
+mathura:["A god is said to have been born in a prison cell down there.","the childhood land of Krishna","The most loved stories often begin in hardship."],
+gwalior:["A small temple here holds one of the world's oldest written zeros.","one of the world's oldest zeros","Nothing, it turns out, was a great invention."],
+jhansi:["A queen escaped this fort on horseback, with her son tied to her back.","a queen's last stand","Courage is remembered long after battles are lost."],
+khajuraho:["Temples carved with life itself lay hidden in forest for centuries.","temples carved with life","Forgotten things are not lost things."],
+lucknow:["A nawab built a monument to keep a starving city employed.","a monument built to feed a city","Sometimes the purpose of building is the building itself."],
+ganga:["Some rivers have carried more than water.","the river that feeds 400 million lives","Whatever you're carrying today, this river has carried more."],
+prayagraj:["Down there, two rivers meet, and tradition says a third joins unseen.","the meeting of three rivers","Some of the largest gatherings in human history happened right there."],
+varanasi:["One of the oldest living cities on Earth is down there.","one of the oldest living cities on Earth","Life and death sit side by side on its steps."],
+sarnath:["The lions on India's national emblem first stood near here.","the deer park of the first sermon","A few words spoken here travelled across Asia."],
+bodhgaya:["A tree here descends from the one under which a man became the Buddha.","the tree of awakening","A single tree can carry 2,500 years of memory."],
+nalanda:["Its library is said to have burned for months.","a library that burned for months","Knowledge is fragile, and precious because of it."],
+patna:["This was once the capital of one of the largest empires in Indian history.","the capital of an ancient empire","Great capitals often sleep beneath ordinary streets."],
+kurukshetra:["The Bhagavad Gita is set on the plain below.","the battlefield of the Gita","Big questions are often asked before big battles."],
+ayodhya:["This is the city of Ram, on the banks of the Sarayu.","the city of Ram","Some cities live as much in stories as on maps."],
+lumbini:["The whole story of the Buddha's life lies within a few hundred kilometres of here.","the land of the Buddha's life","A whole life can fit within a single view."],
+dudhwa:["Tigers and rhinos live in the tall grass at the foot of the Himalaya.","the grasslands at the mountains' feet","Wild places survive at the edges."],
+champaran:["Gandhi's first big fight in India began here, for indigo farmers.","where Gandhi first stood with farmers","Movements often begin with one small injustice."],
+mithila:["Women here have painted their walls with stories for generations.","the land of Madhubani painting","Art doesn't always hang in galleries."],
+farakka:["The Ganga divides here, and part of it is sent to keep Kolkata's port alive.","where the Ganga divides","Even rivers can be gently persuaded."],
+kolkata:["A bridge down there was built without a single nut or bolt.","a bridge held together by rivets","Old cities keep their old ingenuity."],
+sundarbans:["In this forest, tigers swim between islands.","a forest where tigers swim","Some places belong to the tides."],
+darjeeling:["A tiny train still zig-zags up these hills, as it has since 1881.","the hills of the toy train","Slow journeys can last the longest."],
+siliguri:["A strip of land about 20 km wide holds the Northeast to the rest of India.","the Chicken's Neck","Sometimes everything depends on something very narrow."],
+brahmaputra:["One of the few Indian rivers with a male name flows below.","the river with a male name","Some rivers are so wide they look like seas."],
+kaziranga:["Two-thirds of the world's one-horned rhinos live in the grass below.","the home of the one-horned rhino","One place can hold most of a species' future."],
+majuli:["One of the world's largest river islands is slowly being washed away.","an island the river is reclaiming","Even islands are only borrowed from rivers."],
+cherrapunji:["People here grow their bridges from living tree roots.","bridges grown from living roots","Patience can build what concrete can't."],
+loktak:["A national park down there floats on water.","a national park that floats","Some ground is never quite solid."],
+chhotanagpur:["Much of India's steel begins in the earth below you.","the mineral heart of India","The things we build start as rock somewhere."],
+jamshedpur:["One man's dream of Indian steel became a whole city.","a city built around a dream of steel","Some cities start as an idea."],
+bhubaneswar:["A war fought near here changed an emperor forever.","the city of temples","Regret can change the course of history."],
+puri:["The English word 'juggernaut' comes from this town.","the town that gave English 'juggernaut'","Words travel further than we think."],
+konark:["This temple was built as a stone chariot for the sun.","a chariot for the sun","Even stone can tell time."],
+chilika:["A million birds may spend the winter on the lagoon below.","a winter home for a million birds","Some journeys are far longer than yours today."],
+hirakud:["One of the longest earthen dams in the world holds back the river here.","a dam of earth across a great river","Rivers can be held, but never stopped."],
+chitrakote:["There's a waterfall down there they call India's Niagara.","India's Niagara","Wonders hide in the forests few people visit."],
+vindhya:["A legend says these hills bowed down, and never stood up again.","the hills that bowed","Even mountains, in stories, keep promises."],
+satpura:["Seven folds of forested hills hide tigers below you.","the seven folds","Forests keep quiet company."],
+narmada:["Pilgrims walk the length of this river and back, on foot.","the river pilgrims walk","Some journeys are measured in months, not hours."],
+bhedaghat:["A river here cuts through cliffs of marble.","a river through marble cliffs","Water, given time, carves the hardest stone."],
+bhopal:["A lake built a thousand years ago still gives this city its water.","a thousand-year-old lake","Good work can outlast its makers by centuries."],
+ujjain:["Long before Greenwich, India's astronomers measured the world from here.","India's ancient zero line","Every map needs a place to begin."],
+mandu:["A ruined city of palaces still remembers a love story.","a ruined city of love","Love stories outlive kingdoms."],
+indore:["The city below has been ranked India's cleanest, year after year.","India's cleanest city","Habits, kept together, transform a place."],
+pench:["These forests inspired The Jungle Book.","the forests of The Jungle Book","Stories often begin in real forests."],
+nagpur:["You're passing close to the centre of India.","the centre of India","Every journey passes through a middle."],
+thar:["Below is a desert full of villages.","a desert full of life","Even the driest places are lived in."],
+jaisalmer:["Thousands of people still live inside this 12th-century fort.","a fort that is still a home","Some old places are lived in, not just visited."],
+jodhpur:["Below is a city painted blue.","the blue city","A colour can become a city's identity."],
+jaipur:["A whole city was painted pink to welcome a prince.","the pink city","A gesture of welcome can last 150 years."],
+sambhar:["Thousands of flamingos winter on India's biggest inland salt lake.","a salt lake of flamingos","Even salt flats can be full of life."],
+pushkar:["One of the very few temples to Brahma the creator is below.","the town of the creator","The creator, it seems, prefers quiet places."],
+aravalli:["These worn hills are among the oldest mountains on Earth.","some of Earth's oldest mountains","Even mountains grow old and gentle."],
+mountabu:["Up there, marble was carved so finely it looks like lace.","temples of marble lace","Patience leaves fingerprints in stone."],
+udaipur:["A palace down there seems to float on a lake.","a palace on a lake","Some places look as if they were dreamed."],
+chittorgarh:["One of India's largest forts lived through three great sieges.","a fort of legends","Stories of courage outlive the walls."],
+ranthambore:["Tigers here walk through ruined palaces.","tigers among ruins","Nature always takes its places back."],
+kota:["Lakhs of students come to this city every year with one dream.","a city of student dreams","Somewhere below, someone is studying very hard right now."],
+kutch:["Below is one of the largest salt deserts on Earth.","a desert of white salt","Some lands are sea for half the year."],
+alang:["Giant ships come here to be taken apart, mostly by hand.","where ships come to end","Even ships have a final journey."],
+unity:["The tallest statue in the world stands down there.","the world's tallest statue","Unity, it seems, needed a giant."],
+ahmedabad:["A 390 km walk that shook an empire began here.","where the Salt March began","A long walk can change history."],
+gir:["The last wild Asiatic lions live below.","the last home of Asia's lions","Some comebacks take a century."],
+somnath:["From this shore, there's no land in a straight line to the South Pole.","a shore that faces the South Pole","Some places sit at the edge of everything."],
+surat:["Most of the world's diamonds are cut and polished below.","the city that cuts the world's diamonds","Something you wear may have passed through here."],
+mumbai:["This city was once seven islands, and part of a royal dowry.","a city that was once seven islands","Cities can be built from the sea itself."],
+elephanta:["A giant three-faced Shiva is carved inside an island.","an island of carved caves","Some masterpieces hide in plain sight."],
+bhorghat:["Building a railway up these cliffs cost thousands of lives.","the cliffs the railway climbed","Every easy road was once a hard one."],
+pune:["The Maratha empire was run from a palace below.","the city of the Peshwas","Old capitals become new cities."],
+sinhagad:["A fort was won here, but the lion was lost.","the Lion Fort","Some victories are mourned."],
+lonar:["A meteorite struck here, and left a lake that once turned pink.","a crater left by a meteorite","The sky has left its mark on the ground."],
+ajanta:["In 1819, a tiger hunt led to a forgotten world of painted caves.","caves found on a tiger hunt","The past can be one glance away."],
+ellora:["A whole temple was carved downwards, out of a single rock.","a temple carved from a single rock","Some builders couldn't afford a single mistake."],
+aurangabad:["A son built his mother a tomb that echoes the Taj Mahal.","the Taj of the Deccan","Love often borrows from love."],
+ghats:["These hills are older than the Himalaya, and they shape the monsoon.","mountains older than the Himalaya","The rain you love was shaped by these hills."],
+konkan:["A railway below runs through about 90 tunnels.","the coast of tunnels","Some railways were almost impossible."],
+goa:["Portugal ruled the land below for 451 years.","four centuries of Portugal","History leaves its accent behind."],
+dudhsagar:["Trains here run right across the face of a waterfall.","a waterfall trains pass by","Some journeys slow down for beauty."],
+jog:["A river below falls 253 metres in four streams.","a river falling in four streams","Water always finds the most dramatic way down."],
+murudeshwar:["A giant Shiva sits facing the sea.","a giant on the shore","Faith often chooses the most beautiful places."],
+chikmagalur:["India's coffee began with seven smuggled beans.","the hills of seven coffee beans","Your morning coffee may have a smuggler's story."],
+hampi:["Around 1500, this was one of the richest cities in the world.","a lost city among boulders","Even great cities can vanish."],
+badami:["Builders here experimented with how a temple should look.","the cradle of temple design","Every tradition begins as an experiment."],
+golgumbaz:["Under one giant dome, a whisper carries across the room.","the whispering dome","Some buildings were made to listen."],
+mysuru:["On festival nights, nearly 100,000 bulbs light a palace.","a palace of lights","Celebration is a kind of architecture too."],
+srirangapatna:["Rockets fired here changed warfare as far away as England.","Tipu's island fortress","Ideas travel, even across oceans and wars."],
+bengaluru:["This city had electric street lights before most of Asia.","the garden city","Your destination has its own long story."],
+nandi:["Several rivers are born on a hill near here.","a hill where rivers begin","Big rivers start small."],
+kaveri:["Two states have argued over this river for more than a century.","a river precious enough to argue over","Water is never just water."],
+nilgiris:["Once every 12 years, these hills turn blue.","the hills that turn blue","Some wonders are worth the wait."],
+palakkad:["A gap in the mountains lets the wind through to Kerala.","a gap in the mountains","Even mountain walls have doors."],
+kochi:["Vasco da Gama died in the port below.","a port of a thousand traders","Ports remember everyone who passed through."],
+vembanad:["Farmers below grow rice below sea level.","rice fields below the sea","People adapt to almost anything."],
+anamudi:["The highest peak in India south of the Himalaya is below.","the summit of the south","Every land has its own high point."],
+kodaikanal:["A star-shaped lake sits high in these hills.","a star-shaped lake","Hill towns were built for a cooler kind of life."],
+madurai:["A city has grown around one temple for over 2,000 years.","a city built around a temple","Some places are built around a single heartbeat."],
+thanjavur:["A temple tower here was finished more than a thousand years ago.","a thousand-year-old temple tower","A thousand years is not so long for stone."],
+kanyakumari:["Three seas meet at India's southern tip.","where three seas meet","Every land ends somewhere beautiful."],
+rameswaram:["A line of shoals points from here towards Sri Lanka.","the shoals towards Lanka","Legends and geography sometimes share a path."],
+chennai:["The English built their first fortress in India down there.","the city that grew from a fort","Big cities grow from small walls."],
+mahabalipuram:["A temple has faced this sea for 1,300 years.","a temple facing the sea","Stone remembers the sea."],
+puducherry:["Streets below still carry French names.","a little piece of France","History lingers in street signs."],
+sriharikota:["India's rockets to the Moon launch from the island below.","India's spaceport","From down there, people reached the Moon."],
+tirupati:["One of the most visited temples on Earth stands on the hill below.","a hill of pilgrims","Devotion shapes whole mountains."],
+hyderabad:["The Koh-i-Noor came from mines in this old kingdom.","the kingdom of diamonds","The world's most famous stones started here."],
+nagarjunasagar:["Ancient monuments were moved to an island when this valley flooded.","monuments saved from a flood","Sometimes the past must move to survive."],
+krishna:["One river helps fill Andhra Pradesh's rice bowl.","the river of the rice bowl","Every meal begins with water."],
+godavari:["The second-longest river in India is below.","the Dakshin Ganga","The south has its own great river."],
+easternghats:["Great rivers have cut these old hills into pieces.","the broken hills of the east","Rivers always win, eventually."],
+vizag:["A real submarine sits on the beach below.","a city of the sea","Ships end their journeys in unexpected places."],
+bayofbengal:["Below is the largest bay in the world.","the largest bay on Earth","You're crossing a sea fed by great rivers."],
+arabiansea:["Traders crossed these waters for 2,000 years, riding the monsoon.","the sea of monsoon traders","The wind has always connected India to the world."],
+portblair:["Freedom fighters were locked in solitary cells here.","the place called Kala Pani","Freedom has a long memory."],
+barren:["India's only active volcano rises from the sea below.","India's only active volcano","Even now, the Earth is still building islands."],
+ist:["You're crossing the line India sets its clocks by.","the line that sets India's time","Somewhere below, it's exactly the time on your phone."]
+};
+
+// Six stories fully rewritten in the new structure (reviewed against standard references; full source check pending)
+const FULL = {
+chambal:{h:"The most feared valley in central India became one of its last wild places.",e:"a valley outlaws once ruled",ctx:"Madhya Pradesh, Rajasthan & Uttar Pradesh",
+ s:"For centuries the Chambal river cut a maze of gullies into soft earth, deep enough to hide in. Outlaws did, for generations, and towns and factories kept their distance. That fear left the river alone. Today it runs cleaner than most rivers in India, and in 1979 it became the National Chambal Sanctuary, home to most of the world's remaining wild gharials: slender-snouted crocodiles found almost nowhere else on Earth.",
+ k:"Sometimes the places we avoid are the ones that stay wild.",l:"a ragged, branching maze of gullies along a winding river.",
+ d:"The gharial eats almost only fish, and its long, thin snout is built for snapping sideways through water. Adult males grow a bulbous knob on the snout tip called a ghara, after the Hindi word for a clay pot, which gives the animal its name. Each year conservation teams collect eggs from the sandbanks, hatch them safely and release the young back into the river."},
+tropic:{h:"You just crossed a line that the sun draws on the Earth.",e:"a line drawn by the sun",ctx:"About 23.4° north · it runs through eight Indian states",
+ s:"Once a year, on the June solstice, the noon sun stands directly overhead along this line. For a moment, a person standing on it casts almost no shadow. Then the sun begins its slow retreat south, and the line becomes invisible again, marked only by a few signboards on Indian highways from Gujarat to Mizoram.",
+ k:"Somewhere below you, on one day in June, people lose their shadows at noon.",l:"",
+ d:"The line isn't fixed. It is set by the tilt of the Earth's axis, which wobbles very slowly, so the Tropic of Cancer is drifting south by roughly 15 metres every year."},
+sanchi:{h:"An emperor won a terrible war, and spent the rest of his life trying to make up for it.",e:"an emperor's apology in stone",ctx:"Near Vidisha, Madhya Pradesh",
+ s:"Around 261 BCE, Emperor Ashoka conquered Kalinga, on India's east coast. His own inscriptions record his grief at the killing that followed. He turned to the Buddha's teaching and began building places of peace across his empire. On this hilltop he commissioned a great stupa, a dome over sacred relics. Later generations added four stone gateways carved with the Buddha's life, yet the Buddha never appears in human form, only as a wheel, a tree or a pair of footprints.",
+ k:"He is remembered less for what he conquered than for what he regretted.",l:"low wooded hills rising from a flat plain.",
+ d:"Sanchi survived largely intact because it sat away from big cities and was half-forgotten for centuries. A British officer brought it back to wide attention in 1818, and it has been a UNESCO World Heritage Site since 1989. Ashoka's Lion Capital from Sarnath, raised in the same era, is now India's national emblem."},
+bhimbetka:{h:"In 1957, a man looked out of a train window and found India's oldest paintings.",e:"paintings older than farming",ctx:"Rock shelters south of Bhopal",
+ s:"The archaeologist V. S. Wakankar was travelling past these hills when he noticed rock formations like ones he had seen in Spain and France, places famous for prehistoric caves. He went back to look. Inside the rock shelters, the walls were covered with paintings: hunters with bows, dancers, horses, elephants and wild bulls in red and white. Some layers are thought to be around 10,000 years old, made by people who lived here long before farming.",
+ k:"Someone found a lost world by looking out of a window. You're looking out of one now.",l:"forested sandstone hills with pale rock outcrops.",
+ d:"There are hundreds of rock shelters across these hills, and the paintings span many periods, from early hunters to much later times. Some show people riding horses and elephants, which tells archaeologists those layers are far younger. Bhimbetka became a UNESCO World Heritage Site in 2003."},
+deccan:{h:"The ground beneath you was once a sea of fire.",e:"a plateau made of ancient lava",ctx:"Western and central India",
+ s:"About 66 million years ago, the Earth opened up here. For hundreds of thousands of years, lava poured out in flood after flood, layer on layer, until in places the rock was more than two kilometres thick. It happened around the time the dinosaurs disappeared, and scientists still debate how much these eruptions had to do with it. Today the old lava has weathered into flat-topped hills and dark soil.",
+ k:"The black soil that grows India's cotton was once molten rock.",l:"flat-topped hills with stepped sides, like a staircase for giants.",
+ d:"Geologists call it a 'trap' from the Swedish word trappa, meaning stairs, because the hardened lava flows erode into step-like terraces. You can see those steps clearly in the Western Ghats. The dark soil it produced, called regur or black cotton soil, holds moisture well, which is why cotton grows so well across the Deccan."},
+lepakshi:{h:"Legend says a wounded bird fell here, and a prince told it to rise.",e:"the place where a bird was told to rise",ctx:"Andhra Pradesh, near the Karnataka border",
+ s:"In the Ramayana, the great bird Jatayu tries to stop Ravana from carrying Sita away and falls, wounded. Local tradition places that moment here, and says Rama called out 'Le, pakshi!' ('Rise, bird!'), which gave the village its name. In the 16th century, two brothers serving the Vijayanagara empire built the Veerabhadra temple here. One of its pillars barely touches the floor; visitors slide a thin cloth beneath it.",
+ k:"Some places hold on to a story for so long, the story becomes their name.",l:"granite boulders scattered across a dry plateau.",
+ d:"Nearby sits one of India's largest stone Nandi bulls, carved from a single granite rock. The temple's ceilings carry some of the finest surviving Vijayanagara paintings, their colours still visible after nearly 500 years."}
+};
+
+// What you might see from the air, by kind of place (used only in daylight, for places visible from the air)
+const LOOK_BY_TYPE = {
+ river:"a wide, winding river catching the light, with pale sandbars.", lake:"a sheet of water shining among the land.",
+ desert:"pale ground and long ridges of sand.", range:"a line of hills along the horizon.", peak:"snow peaks on the far horizon.",
+ hills:"folded hills, darker green where the forest is.", coast:"the line where the land meets the sea.", sea:"open water, and maybe a ship's wake.",
+ city:"a grey spread of buildings and roads.", forest:"dark green patches of forest.", dam:"a straight line across a river, with a lake behind it.",
+ land:"the texture of the land: fields, ridges and riverbeds.", island:"an island ringed by pale water.", crater:"a perfectly round lake in flat land."
+};
+
+// ECHOES — placeholder illustrations (to be replaced by credited photographs). 400x300 scenes.
+const S = (bg, body) => `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="${bg}"/>${body}</svg>`;
+const ART_TYPE = {
+ river: S("#d9d4c3", `<path d="M0 90 Q120 60 200 120 T400 100 V0 H0Z" fill="#cdc6b0"/><path d="M-10 230 C80 160 160 250 240 180 S350 120 410 160" fill="none" stroke="#9fbccc" stroke-width="22" stroke-linecap="round"/><path d="M-10 230 C80 160 160 250 240 180 S350 120 410 160" fill="none" stroke="#b9d0dc" stroke-width="8" stroke-linecap="round"/><ellipse cx="150" cy="205" rx="22" ry="5" fill="#e7dfc8"/>`),
+ peak: S("#e6edf4", `<path d="M0 230 L90 120 L140 170 L220 70 L300 160 L340 130 L400 190 V300 H0Z" fill="#9aa8b8"/><path d="M220 70 L250 105 L235 102 L222 115 L205 100 L195 102Z M90 120 L108 142 L95 140 L82 150 L76 137Z" fill="#fff"/><rect y="250" width="400" height="50" fill="#b9c4d0"/>`),
+ range: S("#ebe9e0", `<path d="M0 200 Q60 130 120 170 T240 150 T400 160 V300 H0Z" fill="#a8b29a"/><path d="M0 240 Q90 190 180 225 T400 210 V300 H0Z" fill="#8e9a80"/>`),
+ hills: S("#ecebdf", `<path d="M0 190 Q80 120 160 180 T320 170 T400 180 V300 H0Z" fill="#9db08d"/><path d="M0 235 Q100 195 200 230 T400 225 V300 H0Z" fill="#7f9472"/><g fill="#6c8160"><circle cx="70" cy="215" r="7"/><circle cx="84" cy="218" r="6"/><circle cx="300" cy="200" r="7"/></g>`),
+ city: S("#e9e6e0", `<rect y="230" width="400" height="70" fill="#d3cec4"/><g fill="#b8b1a5"><rect x="40" y="170" width="40" height="60"/><rect x="90" y="140" width="30" height="90"/><rect x="130" y="185" width="50" height="45"/><rect x="190" y="120" width="26" height="110"/><rect x="226" y="160" width="44" height="70"/><rect x="280" y="190" width="36" height="40"/><rect x="326" y="150" width="32" height="80"/></g><circle cx="320" cy="70" r="20" fill="#f1c27a"/>`),
+ fort: S("#ece2d2", `<rect y="240" width="400" height="60" fill="#d6c7ad"/><path d="M60 240 V150 H90 V135 H110 V150 H140 V135 H160 V150 H190 V120 H210 V105 H230 V120 H250 V150 H280 V135 H300 V150 H340 V240Z" fill="#c4a982"/><rect x="190" y="190" width="22" height="50" rx="11" fill="#a68c66"/>`),
+ monument: S("#efe7dc", `<rect y="240" width="400" height="60" fill="#d8cbb6"/><path d="M150 240 V170 L200 90 L250 170 V240Z" fill="#c8b79c"/><path d="M110 240 V190 L140 150 L170 190 V240Z M230 240 V190 L260 150 L290 190 V240Z" fill="#d1c1a6"/><rect x="190" y="200" width="20" height="40" fill="#a8977a"/>`),
+ dam: S("#e8ecef", `<rect y="0" width="400" height="140" fill="#cfdde6"/><path d="M0 140 H400 V170 H0Z" fill="#b8b3a8"/><rect y="170" width="400" height="130" fill="#d9d2c2"/><path d="M180 170 C190 210 170 250 200 300 M220 170 C215 210 235 250 215 300" stroke="#a9c3d1" stroke-width="10" fill="none"/>`),
+ lake: S("#e4ead9", `<ellipse cx="200" cy="170" rx="150" ry="70" fill="#a9c6d4"/><ellipse cx="170" cy="160" rx="60" ry="18" fill="#c3d8e2"/><g fill="#f0d4d8"><circle cx="260" cy="190" r="4"/><circle cx="272" cy="186" r="4"/><circle cx="284" cy="192" r="4"/></g>`),
+ forest: S("#e6eadc", `<rect y="230" width="400" height="70" fill="#a7b48f"/><g fill="#6f8a5f"><path d="M40 230 L70 150 L100 230Z"/><path d="M90 230 L125 130 L160 230Z"/><path d="M150 230 L180 165 L210 230Z"/><path d="M220 230 L260 120 L300 230Z"/><path d="M290 230 L320 160 L350 230Z"/><path d="M340 230 L370 175 L400 230Z"/></g>`),
+ coast: S("#e7eef1", `<rect y="150" width="400" height="150" fill="#9fc0cf"/><path d="M0 150 Q100 130 160 160 T300 190 T400 230 V0 H0Z" fill="#e5dcc8"/><path d="M0 150 Q100 130 160 160 T300 190 T400 230" fill="none" stroke="#fff" stroke-width="4"/>`),
+ sea: S("#dfeaf1", `<rect y="120" width="400" height="180" fill="#9dbfd0"/><g stroke="#c4dae5" stroke-width="3" fill="none" stroke-linecap="round"><path d="M40 170 q20 -8 40 0"/><path d="M220 210 q20 -8 40 0"/><path d="M120 250 q20 -8 40 0"/><path d="M300 160 q20 -8 40 0"/></g><path d="M260 190 l30 0 l-6 8 h-18z" fill="#6f7d86"/>`),
+ desert: S("#f1e6cf", `<path d="M0 200 Q80 160 160 200 T320 190 T400 200 V300 H0Z" fill="#e3c99a"/><path d="M0 245 Q100 210 200 245 T400 240 V300 H0Z" fill="#d6b37c"/><circle cx="310" cy="80" r="26" fill="#f2c26b"/>`),
+ falls: S("#e3eadf", `<path d="M0 0 H150 V300 H0Z M250 0 H400 V300 H250Z" fill="#8a9b7a"/><rect x="150" y="0" width="100" height="300" fill="#c9dde6"/><g stroke="#fff" stroke-width="4" opacity=".8"><line x1="170" y1="0" x2="170" y2="300"/><line x1="200" y1="0" x2="200" y2="300"/><line x1="230" y1="0" x2="230" y2="300"/></g><ellipse cx="200" cy="290" rx="90" ry="20" fill="#eef4f6"/>`),
+ island: S("#dfeaf1", `<rect width="400" height="300" fill="#9dbfd0"/><ellipse cx="200" cy="160" rx="120" ry="60" fill="#c9dbe3"/><ellipse cx="200" cy="160" rx="95" ry="44" fill="#a9b98f"/><ellipse cx="185" cy="150" rx="40" ry="16" fill="#8fa178"/>`),
+ crater: S("#e6dfcf", `<circle cx="200" cy="160" r="105" fill="#bdae8d"/><circle cx="200" cy="160" r="82" fill="#97ab8a"/><circle cx="200" cy="160" r="58" fill="#9ec0c7"/>`),
+ gorge: S("#ece6dc", `<path d="M0 0 H160 L140 300 H0Z M240 0 H400 V300 H260Z" fill="#e8e3da"/><path d="M160 0 L140 300 H260 L240 0Z" fill="#a9c6d4"/><path d="M0 0 H150 L130 300 H0Z M250 0 H400 V300 H270Z" fill="#d9d2c7"/>`),
+ pass: S("#e9ebe4", `<path d="M0 120 L160 220 L240 220 L400 110 V300 H0Z" fill="#9aa792"/><path d="M180 300 C190 260 170 240 200 220" stroke="#e4ddcc" stroke-width="10" fill="none"/>`),
+ line: S("#f3ead6", `<circle cx="200" cy="80" r="34" fill="#f2b84b"/><line x1="0" y1="190" x2="400" y2="190" stroke="#b07d3a" stroke-width="2" stroke-dasharray="8 8"/><rect y="210" width="400" height="90" fill="#e2d3b3"/>`)
+};
+const ART_ID = {
+ chambal: S("#e3d2b4", `<g stroke="#c4a77f" stroke-width="3" fill="none" stroke-linecap="round"><path d="M40 40 l30 40 l-10 30 M90 20 l10 50 l30 20 M300 30 l-20 50 l10 40 M350 60 l-40 30 M60 230 l40 -40 l30 10 M320 250 l-30 -40 l-30 0 M200 20 l0 40 l-20 30"/></g><path d="M-10 170 C80 120 140 210 220 160 S340 110 410 150" fill="none" stroke="#8fb0c4" stroke-width="16" stroke-linecap="round"/><ellipse cx="250" cy="152" rx="20" ry="4" fill="#6c7a5a"/>`),
+ tropic: S("#f3ead6", `<circle cx="200" cy="70" r="34" fill="#f2b84b"/><line x1="0" y1="190" x2="400" y2="190" stroke="#b07d3a" stroke-width="2" stroke-dasharray="8 8"/><rect x="0" y="210" width="400" height="90" fill="#e2d3b3"/><line x1="200" y1="150" x2="200" y2="210" stroke="#3a3a3c" stroke-width="3"/><circle cx="200" cy="144" r="6" fill="#3a3a3c"/>`),
+ sanchi: S("#efe7dc", `<rect y="230" width="400" height="70" fill="#d8cbb6"/><rect x="120" y="200" width="160" height="30" fill="#c8b79c"/><path d="M130 200 A70 70 0 0 1 270 200Z" fill="#cdbb9f"/><rect x="190" y="118" width="20" height="14" fill="#b9a585"/><rect x="196" y="100" width="8" height="18" fill="#b9a585"/><g fill="none" stroke="#9c8766" stroke-width="5"><path d="M310 230 V160 M350 230 V160 M300 166 H360 M302 178 H358 M304 190 H356"/></g>`),
+ bhimbetka: S("#d8b48a", `<path d="M0 0 H400 V60 Q300 90 200 70 T0 80Z" fill="#c49b6e"/><g stroke="#8a3b22" stroke-width="3" fill="none" stroke-linecap="round"><path d="M120 140 v40 M120 150 l-14 14 M120 150 l16 10 M120 180 l-10 24 M120 180 l12 24"/><circle cx="120" cy="132" r="6" fill="#8a3b22"/><path d="M140 146 q16 14 0 30"/><path d="M220 170 h70 M230 170 l-6 26 M280 170 l6 26 M290 170 l12 -14 l4 -10"/><path d="M215 162 q40 -22 80 0"/></g>`),
+ deccan: S("#e7e1d8", `<path d="M0 150 L70 150 L90 120 L200 120 L220 140 L300 140 L320 110 L400 110 V300 H0Z" fill="#5b5550"/><g stroke="#7a736c" stroke-width="2"><line x1="0" y1="180" x2="400" y2="180"/><line x1="0" y1="215" x2="400" y2="215"/><line x1="0" y1="250" x2="400" y2="250"/></g><line x1="0" y1="232" x2="400" y2="232" stroke="#d9773a" stroke-width="2" opacity=".7"/><rect y="270" width="400" height="30" fill="#2f2b28"/>`),
+ lepakshi: S("#ece5da", `<rect y="250" width="400" height="50" fill="#cfc3b0"/><rect x="40" y="60" width="320" height="22" fill="#b9aa92"/><g fill="#c8b9a1"><rect x="60" y="82" width="34" height="168"/><rect x="150" y="82" width="34" height="168"/><rect x="230" y="82" width="34" height="160"/><rect x="310" y="82" width="34" height="168"/></g><path d="M300 34 q14 -12 28 0 q14 -12 28 0" fill="none" stroke="#5e5e63" stroke-width="3" stroke-linecap="round"/>`)
+};
+const ART_WELCOME = `<svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="800" fill="#7d8a6a"/><path d="M0 120 Q120 90 200 160 T400 140 V0 H0Z" fill="#8f9b78"/><path d="M0 420 Q140 380 240 460 T400 430 V800 H0Z" fill="#6e7a5c"/><path d="M60 -20 C160 120 20 220 140 330 S300 420 200 540 S80 680 220 820" fill="none" stroke="#c9d8de" stroke-width="22" stroke-linecap="round"/><path d="M60 -20 C160 120 20 220 140 330 S300 420 200 540 S80 680 220 820" fill="none" stroke="#a9c3cf" stroke-width="10" stroke-linecap="round"/><g fill="#5f6b4f" opacity=".55"><rect x="250" y="210" width="60" height="34" rx="3"/><rect x="290" y="260" width="44" height="40" rx="3"/><rect x="30" y="600" width="70" height="40" rx="3"/><rect x="300" y="620" width="50" height="60" rx="3"/></g></svg>`;
+function artFor(id, t) { return ART_ID[id] || ART_TYPE[t] || ART_TYPE.land || ART_TYPE.range; }
+ART_TYPE.land = ART_TYPE.range;
+
+// ECHOES engine: geometry + route building (no DOM)
+const RK = 6371, rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+function hav(a, b) {
+  const dφ = rad(b[0] - a[0]), dλ = rad(b[1] - a[1]);
+  const h = Math.sin(dφ / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dλ / 2) ** 2;
+  return 2 * RK * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+function brg(a, b) {
+  const φ1 = rad(a[0]), φ2 = rad(b[0]), dλ = rad(b[1] - a[1]);
+  const y = Math.sin(dλ) * Math.cos(φ2), x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(dλ);
+  return (deg(Math.atan2(y, x)) + 360) % 360;
+}
+function gcInterp(a, b, f) {
+  const d = hav(a, b) / RK; if (d < 1e-9) return [a[0], a[1]];
+  const A = Math.sin((1 - f) * d) / Math.sin(d), B = Math.sin(f * d) / Math.sin(d);
+  const φ1 = rad(a[0]), λ1 = rad(a[1]), φ2 = rad(b[0]), λ2 = rad(b[1]);
+  const x = A * Math.cos(φ1) * Math.cos(λ1) + B * Math.cos(φ2) * Math.cos(λ2);
+  const y = A * Math.cos(φ1) * Math.sin(λ1) + B * Math.cos(φ2) * Math.sin(λ2);
+  const z = A * Math.sin(φ1) + B * Math.sin(φ2);
+  return [deg(Math.atan2(z, Math.hypot(x, y))), deg(Math.atan2(y, x))];
+}
+// cross-track (km, + = right of course) and along-track (km) of p relative to a->b
+function xtAt(a, b, p) {
+  const d13 = hav(a, p) / RK, t = rad(brg(a, p)) - rad(brg(a, b));
+  const xt = Math.asin(Math.sin(d13) * Math.sin(t));
+  let at = Math.acos(Math.max(-1, Math.min(1, Math.cos(d13) / Math.cos(xt))));
+  if (Math.cos(t) < 0) at = -at;
+  return { xt: xt * RK, at: at * RK };
+}
+function airport(code) { const a = AIRPORTS.find(x => x[0] === code); return a && { code: a[0], city: a[1], pos: [a[2], a[3]] }; }
+function estAirMinutes(km) { return Math.round(km / 700 * 60 + 12); }
+const CORRIDOR = 70; // km either side worth narrating from cruise
+function leadKm(r) { return Math.max(15, Math.min(60, r * 0.3)); }
+
+function buildRoute(depCode, arrCode) {
+  const dep = airport(depCode), arr = airport(arrCode);
+  const total = hav(dep.pos, arr.pos);
+  const items = [];
+  for (const pl of PLACES) {
+    let best = null;
+    for (const pt of pl.p) {
+      const { xt, at } = xtAt(dep.pos, arr.pos, pt);
+      if (at < -pl.r * 0.3 || at > total + pl.r * 0.3) continue;
+      if (Math.abs(xt) > Math.max(pl.r, CORRIDOR)) continue;
+      if (!best || Math.abs(xt) < Math.abs(best.xt)) best = { xt, at, pt };
+    }
+    if (best) items.push({ id: pl.id, n: pl.n, t: pl.t, r: pl.r, s: pl.s, pt: best.pt,
+      at: Math.max(0, Math.min(total, best.at)), dist: Math.abs(best.xt), side: Math.abs(best.xt) < 12 ? "B" : (best.xt > 0 ? "R" : "L") });
+  }
+  // line crossings
+  const N = 400;
+  for (const ln of LINES) {
+    let prev = null;
+    for (let i = 0; i <= N; i++) {
+      const p = gcInterp(dep.pos, arr.pos, i / N), v = (ln.kind === "lat" ? p[0] : p[1]) - ln.v;
+      if (prev !== null && Math.sign(v) !== Math.sign(prev) && v !== 0) {
+        const f = (i - 1 + prev / (prev - v)) / N;
+        items.push({ id: ln.id, n: ln.n, t: "line", r: 15, s: ln.s, pt: gcInterp(dep.pos, arr.pos, f), at: f * total, dist: 0, side: "B" });
+        break;
+      }
+      prev = v;
+    }
+  }
+  items.sort((a, b) => a.at - b.at);
+  return { dep, arr, total, items, airMin: estAirMinutes(total) };
+}
+
+// Approximate sun altitude/azimuth (deg) for a UTC Date at lat/lon
+function sunPos(date, lat, lon) {
+  const d = (date.getTime() - Date.UTC(2000, 0, 1, 12)) / 86400000;
+  const g = rad((357.529 + 0.98560028 * d) % 360), L = (280.459 + 0.98564736 * d) % 360;
+  const lam = rad(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)), eps = rad(23.439 - 0.00000036 * d);
+  const ra = Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)), dec = Math.asin(Math.sin(eps) * Math.sin(lam));
+  const gmst = (18.697374558 + 24.06570982441908 * d) % 24;
+  const ha = rad(((gmst * 15 + lon) - deg(ra)) % 360), φ = rad(lat);
+  const alt = Math.asin(Math.sin(φ) * Math.sin(dec) + Math.cos(φ) * Math.cos(dec) * Math.cos(ha));
+  const az = Math.atan2(-Math.sin(ha), Math.tan(dec) * Math.cos(φ) - Math.sin(φ) * Math.cos(ha));
+  return { alt: deg(alt), az: (deg(az) + 360) % 360 };
+}
+
+
+// ECHOES — experience layer on top of the tracking engine (engine.js unchanged)
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("echoes." + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("echoes." + k, JSON.stringify(v)); } catch (e) {} }
+};
+const WAIT_FOR_GPS_MS = 90000, GPS_FRESH_MS = 120000;
+const VISIBLE = new Set(["river", "lake", "desert", "range", "peak", "hills", "coast", "sea", "city", "forest", "dam", "land", "island", "crater"]);
+const SKY = { dawn: ["#f8e3da", "#e9ddeb"], day: ["#e3eefa", "#f4f8fd"], dusk: ["#f5e3c8", "#e9d9e6"], night: ["#1b2433", "#2a3346"] };
+const QUIET = ["Quiet skies for now.", "Nothing to point out just yet. Enjoy the view.", "Somewhere below, ordinary lives are unfolding in towns you'll never visit."];
+
+let plan = store.get("plan", null), route = null, mode = "live", demo = false, screen = "";
+let met = [], skipped = [], cur = null, phase = null, s = 0, pos = null, hdg = null, live = null, t0 = null, landed = false;
+let journeyPaused = false, notYet = false, watchId = null, clockId = null, playId = null, fallbackT = null, revealT = null, lastFix = null, lastFixAt = 0, fixAcc = 1e9, gotFix = false, wakeLock = null, journalBack = "plan", storyBack = "sky";
+
+// ---------- pictures: a photograph/illustration when we have one, the simple drawing otherwise
+function pic(id, t) { return PHOTOS.has(id) ? `<img src="images/${id}.jpg" alt="" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block">` : artFor(id, t); }
+
+// ---------- helpers
+function show(id) {
+  document.querySelectorAll(".screen").forEach(el => el.classList.toggle("on", el.id === id)); screen = id;
+  const tabbed = id === "sky" || id === "journey"; $("#tabs").hidden = !tabbed; $("#tabs").classList.toggle("dark", id === "journey");
+  if (id !== "journey" && typeof closeSheets === "function" && J.built) { $("#detSheet").classList.remove("on"); $("#scrim").classList.remove("on"); $("#allSheet").classList.remove("on"); }
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === id));
+  const el = $("#" + id); if (el && id !== "journey") el.scrollTop = 0;
+}
+function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), 2800); }
+function pad(n) { return String(n).padStart(2, "0"); }
+function flightKey(p) { return [p.from, p.to, p.date, p.time].join("|"); }
+function depDate(p) { return new Date(`${p.date}T${p.time}:00+05:30`); }
+function placeById(id) { const p = PLACES.find(x => x.id === id); if (p) return p; const l = LINES.find(x => x.id === id); return l && { id: l.id, n: l.n, t: "line", s: l.s }; }
+function tale(it) {
+  const F = FULL[it.id], H = HOOKS[it.id] || [];
+  return { hook: F ? F.h : H[0] || it.n, echo: F ? F.e : H[1] || it.n, take: F ? F.k : H[2] || "", text: F ? F.s : it.s,
+    ctx: F ? F.ctx : "", look: F ? F.l : (VISIBLE.has(it.t) ? LOOK_BY_TYPE[it.t] || "" : ""), deep: F ? F.d : "" };
+}
+function joinList(a) { return a.length < 2 ? a[0] || "" : a.slice(0, -1).join(", ") + ", and " + a[a.length - 1]; }
+function gpsGood() { return mode === "live" && gotFix && Date.now() - lastFixAt < GPS_FRESH_MS && fixAcc < 3000; }
+function precise() { return gpsGood() || mode === "demo"; }
+
+// ---------- 1 · Welcome & 2 · Where are you flying
+function fillPlan() {
+  const opts = AIRPORTS.slice().sort((a, b) => a[1].localeCompare(b[1])).map(a => `<option value="${a[0]}">${a[1].replace(/ \(.+\)/, "")}${/\(/.test(a[1]) ? " " + a[1].match(/\(.+\)/)[0] : ""}</option>`).join("");
+  $("#from").innerHTML = opts; $("#to").innerHTML = opts;
+  const now = new Date(), later = new Date(now.getTime() + 60 * 60000);
+  const p = plan || { from: "DEL", to: "BLR", seat: "L" };
+  $("#from").value = p.from; $("#to").value = p.to;
+  $("#date").value = p.date && p.date >= `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` ? p.date : `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  $("#time").value = p.time && p.date === $("#date").value ? p.time : `${pad(later.getHours())}:${later.getMinutes() < 30 ? "00" : "30"}`;
+  pickSide(p.seat === "R" ? "R" : "L");
+  $("#echoesBtn").hidden = !store.get("journals", []).length;
+}
+function pickSide(v) { $(".wins").dataset.v = v; document.querySelectorAll(".win").forEach(b => b.classList.toggle("on", b.dataset.side === v)); }
+
+// ---------- 3 · Preparing your journey
+function prepare(isDemo) {
+  const p = { from: $("#from").value, to: $("#to").value, date: $("#date").value, time: $("#time").value || "12:00", seat: $(".wins").dataset.v || "L" };
+  if (p.from === p.to) return toast("Choose two different cities.");
+  plan = p; store.set("plan", plan); demo = isDemo;
+  route = buildRoute(plan.from, plan.to);
+  met = []; skipped = []; opened = []; savedIds = []; notYet = false; cur = null; phase = null; s = 0; pos = route.dep.pos; hdg = brg(route.dep.pos, route.arr.pos); landed = false; t0 = null; gotFix = false;
+  const saved = store.get("flight", null);
+  if (!demo && saved && saved.key === flightKey(plan)) { met = saved.met || []; skipped = saved.skipped || []; opened = saved.opened || []; savedIds = saved.saved || []; t0 = saved.t0 ? new Date(saved.t0) : null; }
+  show("prep");
+  drawPrep();
+  const pickEvery = Math.max(1, Math.floor(route.items.length / 3));
+  const teaser = route.items.filter((_, i) => i % pickEvery === Math.floor(pickEvery / 2)).slice(0, 3).map(it => tale(it).echo);
+  $("#prepLine").style.opacity = 0; $("#ready").style.opacity = 0;
+  $("#prepLine").textContent = route.items.length ? `Beneath your route: ${joinList(teaser)}.` : "A quiet route today, with the sky to yourself.";
+  setTimeout(() => $("#prepLine").style.opacity = 1, 1500);
+  setTimeout(() => $("#ready").style.opacity = 1, 3000);
+  if (!demo && navigator.onLine) fetchWeather();
+}
+function project(points, W, H, padX, padY) {
+  const la = points.map(p => p[0]), lo = points.map(p => p[1]);
+  let la0 = Math.min(...la), la1 = Math.max(...la), lo0 = Math.min(...lo), lo1 = Math.max(...lo);
+  const k = Math.cos(rad((la0 + la1) / 2)); if ((lo1 - lo0) * k < 2) { const c = (lo0 + lo1) / 2; lo0 = c - 1 / k; lo1 = c + 1 / k; } if (la1 - la0 < 2) { const c = (la0 + la1) / 2; la0 = c - 1; la1 = c + 1; }
+  const sc = Math.min((W - 2 * padX) / ((lo1 - lo0) * k), (H - 2 * padY) / (la1 - la0)), cx = (lo0 + lo1) / 2, cy = (la0 + la1) / 2;
+  return p => [W / 2 + (p[1] - cx) * k * sc, H / 2 - (p[0] - cy) * sc];
+}
+function routePath(P, upto = 1) { let d = ""; for (let i = 0; i <= 48 && i / 48 <= upto + 1e-9; i++) { const [x, y] = P(gcInterp(route.dep.pos, route.arr.pos, i / 48)); d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1); } return d; }
+function drawPrep() {
+  const P = project([route.dep.pos, route.arr.pos], 340, 200, 60, 40);
+  const [dx, dy] = P(route.dep.pos), [ax, ay] = P(route.arr.pos), lab = 'font-size="12" fill="var(--pencil)" font-family="-apple-system,system-ui,sans-serif" text-anchor="middle"';
+  $("#prepSvg").innerHTML = `<path id="pr" d="${routePath(P)}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="transition:stroke-dashoffset 1.8s ease"/>
+  <circle cx="${dx}" cy="${dy}" r="4" fill="var(--ink)"/><text x="${dx}" y="${dy + (dy > ay ? 22 : -12)}" ${lab}>${route.dep.city}</text>
+  <circle cx="${ax}" cy="${ay}" r="4" fill="var(--ink)" opacity=".35"/><text x="${ax}" y="${ay + (ay > dy ? 22 : -12)}" ${lab}>${route.arr.city}</text>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => { const p = $("#pr"); if (p) p.style.strokeDashoffset = 0; }));
+}
+
+// ---------- 4 · Above the clouds
+function board() {
+  show("sky"); $("#demoBar").hidden = !demo;
+  if (demo) { mode = "demo"; update(0, route.dep.pos, hdg); return; }
+  saveFlight(); keepAwake(); startGPS();
+}
+function skyTime() { return mode === "demo" ? new Date(depDate(plan).getTime() + (20 + s / route.total * route.airMin) * 60000) : new Date(); }
+function skyMood() {
+  const p = pos || route.dep.pos, t = skyTime(), sp = sunPos(t, p[0], p[1]);
+  if (sp.alt < -6) return "night"; if (sp.alt < 8) return sp.az < 180 ? "dawn" : "dusk"; return "day";
+}
+function calmText() {
+  if (mode === "live" && !gotFix) return "Finding your place in the sky. Hold your phone near the window.";
+  if (mode === "clock" && !t0) return Date.now() > schedTakeoff().getTime() + 5 * 60000 && !notYet
+    ? (Date.now() - schedTakeoff() > route.airMin * 60000 ? "Did you take off a while ago? Tell us when, and we'll find your place." : `Did you take off around ${fmtTime(schedTakeoff())}?`) : "Tap when the wheels leave the ground, and we'll follow along.";
+  if (mode === "live" && !t0 && s < 20) return "Your stories are ready. They'll begin once you're in the air.";
+  if (s < 40) return `${route.dep.city} is falling away behind you.`;
+  if (route.total - s < 60) return `Not long now. ${route.arr.city} is getting closer.`;
+  const p = pos || route.dep.pos;
+  let best = null;
+  const upcoming = new Set(route.items.filter(it => !met.includes(it.id)).map(it => it.id));
+  for (const pl of PLACES) if (["range", "land", "desert", "hills", "forest", "sea"].includes(pl.t) && !upcoming.has(pl.id))
+    for (const pt of pl.p) { const d = hav(p, pt); if (d < 140 && (!best || d < best.d)) best = { d, pl }; }
+  if (best) { const nm = best.pl.n.replace(/ \(.+\)$/, ""); return precise() ? `Below you now: ${nm}.` : `Somewhere beneath you: ${nm}.`; }
+  return QUIET[Math.floor(s / 180) % QUIET.length];
+}
+function renderSky() {
+  if (screen !== "sky") return;
+  const mood = skyMood(), [a, b] = SKY[mood], w = $("#win");
+  w.style.background = `linear-gradient(180deg, ${a}, ${b})`;
+  w.classList.toggle("night", mood === "night"); w.classList.toggle("warm", phase === "hook");
+  $("#calm").textContent = cur ? "" : calmText(); $("#calm").style.opacity = cur ? 0 : 1;
+  const needBtn = !cur && mode === "clock" && !t0;
+  const late = needBtn && Date.now() > schedTakeoff().getTime() + 5 * 60000 && !notYet;
+  const want = !needBtn ? "" : late ? "late" : "now";
+  if (needBtn && $("#inAction").dataset.k !== want && !$("#tkTime")) {
+    $("#inAction").dataset.k = want;
+    if (late) {
+      const tooLong = Date.now() - schedTakeoff() > route.airMin * 60000;
+      $("#inAction").innerHTML = `<div class="stack">${tooLong ? "" : `<button class="inbtn" id="tkYes" style="margin:0">Yes, Around Then</button>`}<button class="${tooLong ? "inbtn" : "ghost"}" id="tkPick"${tooLong ? ' style="margin:0"' : ""}>Pick the Time</button><button class="ghost" id="tkNo">Not Yet</button></div>`;
+      if ($("#tkYes")) $("#tkYes").onclick = e => { e.stopPropagation(); setTakeoff(schedTakeoff()); };
+      $("#tkPick").onclick = e => { e.stopPropagation(); takeoffPicker($("#inAction")); };
+      $("#tkNo").onclick = e => { e.stopPropagation(); notYet = true; $("#inAction").dataset.k = ""; renderSky(); };
+    } else {
+      $("#inAction").innerHTML = `<div class="stack"><button class="inbtn" id="tookOff" style="margin:0">We Just Took Off</button><button class="ghost" id="tkEarlier">Took off earlier?</button></div>`;
+      $("#tookOff").onclick = e => { e.stopPropagation(); setTakeoff(new Date()); };
+      $("#tkEarlier").onclick = e => { e.stopPropagation(); takeoffPicker($("#inAction")); };
+    }
+  } else if (!needBtn) {
+    $("#inAction").dataset.k = "";
+    const preview = window.self !== window.top && mode === "clock" && t0 && !cur;
+    if (preview && !$("#toDemo")) { $("#inAction").innerHTML = `<button class="inbtn" id="toDemo" style="background:transparent;color:inherit;border:1px solid currentColor;opacity:.7;font-weight:500">Previewing? Play it as a demo</button>`;
+      $("#toDemo").onclick = e => { e.stopPropagation(); clearInterval(clockId); demo = true; mode = "demo"; $("#demoBar").hidden = false; toast("Demo flight. Use Play or Next."); skip(); }; }
+    else if (!preview) $("#inAction").innerHTML = "";
+  }
+  $("#hook").classList.toggle("show", phase === "hook"); $("#hookActs").classList.toggle("show", phase === "hook");
+  $("#winArt").classList.toggle("show", phase === "reveal"); $("#reveal").classList.toggle("show", phase === "reveal");
+}
+function posLine(it) {
+  const p = precise();
+  if (it.t === "line") return p ? "You're crossing it right now." : "You're crossing it around now.";
+  const sd = it.liveSide || it.side, d = Math.round(it.liveDist ?? it.dist);
+  if (sd === "B") return p ? "Right below you." : "Somewhere beneath you, around now.";
+  const w = sd === "L" ? "left" : "right", other = sd !== plan.seat ? " It's on the other side of the plane." : "";
+  if (!p) return `Somewhere off to your ${w}, around now.${other}`;
+  if (it.behind) return `On your ${w}, now just behind you.${other}`;
+  return (d > 90 ? `On your ${w}, far out towards the horizon.` : `On your ${w}, about ${d} km away.`) + other;
+}
+
+// ---------- Take-off time (tap now, pick a past time, or confirm the scheduled one)
+function schedTakeoff() { return new Date(depDate(plan).getTime() + 20 * 60000); }
+function fmtTime(d) { return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }); }
+function setTakeoff(d) {
+  t0 = d; saveFlight();
+  const mins = Math.round((Date.now() - d) / 60000);
+  toast(mins < 2 ? "Lovely. Enjoy the flight." : `Got it. ${mins} minutes in the air. Finding your place in the sky.`);
+  if (mode !== "live") startClock(); else update(s, pos, hdg, live);
+}
+function timeToDate(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number), d = new Date(); d.setHours(h, m, 0, 0);
+  if (d > new Date(Date.now() + 60000)) d.setDate(d.getDate() - 1); // a time later than now means yesterday
+  return d;
+}
+function takeoffPicker(target, onDone) {
+  const now = new Date(), def = new Date(Math.min(now.getTime() - 5 * 60000, Math.max(schedTakeoff().getTime(), now.getTime() - 6 * 3600000)));
+  target.innerHTML = `<div class="pick"><label>When did you take off?</label><input type="time" id="tkTime" value="${pad(def.getHours())}:${pad(def.getMinutes())}"><button class="inbtn" id="tkSet" style="margin:0">Set</button></div>`;
+  $("#tkTime").onclick = e => e.stopPropagation();
+  $("#tkSet").onclick = e => { e.stopPropagation(); const v = $("#tkTime").value; if (!v) return; const d = timeToDate(v);
+    if (Date.now() - d > route.airMin * 60000 + 3600000) return toast("That's longer ago than this whole flight. Please check the time.");
+    onDone && onDone(); setTakeoff(d); };
+}
+
+// ---------- 5 · A discovery
+function discover(it) {
+  cur = it; phase = "hook"; stopPlay();
+  const t = tale(it);
+  $("#hook").textContent = t.hook;
+  if (PHOTOS.has(it.id)) { $("#winArt").innerHTML = pic(it.id, it.t); $("#winArt").style.background = "transparent"; }
+  else { const art = artFor(it.id, it.t); $("#winArt").innerHTML = art.replace("xMidYMid slice", "xMidYMid meet"); $("#winArt").style.background = (art.match(/fill="(#[0-9a-f]{6})"/i) || [, "transparent"])[1]; }
+  $("#rName").textContent = it.n; $("#rPos").textContent = posLine(it);
+  renderSky();
+  clearTimeout(revealT); revealT = setTimeout(() => { if (cur === it && phase === "hook") reveal(); }, 6000);
+}
+function reveal() { phase = "reveal"; meet(cur); $("#rPos").textContent = posLine(cur); renderSky(); }
+function later() {
+  if (!cur) return; if (!met.includes(cur.id) && !skipped.includes(cur.id)) skipped.push(cur.id); if (!savedIds.includes(cur.id)) savedIds.push(cur.id);
+  cur = null; phase = null; clearTimeout(revealT); saveFlight(); toast("Saved for later. You'll find it in Journey."); renderSky();
+  if (route && (mode === "demo" || mode === "clock" || gotFix)) setTimeout(() => { if (screen === "sky" && !cur) update(s, pos, hdg, live); }, 1500);
+}
+function meet(it) { if (!met.includes(it.id)) { met.push(it.id); saveFlight(); } }
+function nextStoryMin() {
+  const n = route.items.find(it => !met.includes(it.id) && it.at - leadKm(it.r) > s);
+  return n ? Math.max(1, Math.round((n.at - leadKm(n.r) - s) / route.total * route.airMin)) : null;
+}
+function windowTap() {
+  if (phase === "hook") return reveal();
+  if (phase === "reveal") { storyBack = "sky"; return openStory(cur); }
+  if (mode === "clock" && !t0) return toast("Tap “We Just Took Off” when the plane leaves the ground.");
+  if (mode === "live" && !gotFix) return toast("Still finding you. Keep your phone close to the window.");
+  const m = nextStoryMin();
+  toast(m == null ? "That's every story on this route. Enjoy the rest of the view." : m <= 1 ? "Your next story is almost here." : `All quiet below. Your next story is about ${m} minutes away.`);
+}
+
+// ---------- 6 · The story
+function openStory(it) {
+  const t = tale(it);
+  $("#sHero").innerHTML = pic(it.id, it.t);
+  const gpsNear = storyBack === "journey" && posState().kind === "gps" && it.due;
+  $("#sPos").textContent = storyBack === "sky" || gpsNear ? posLine(it) : storyBack === "journey" ? contextFor(it) : "";
+  $("#sName").textContent = it.n; $("#sCtx").textContent = t.ctx; $("#sCtx").hidden = !t.ctx;
+  $("#sText").textContent = t.text; $("#sTake").textContent = t.take; $("#sTake").hidden = !t.take;
+  const night = screen === "sky" && skyMood() === "night";
+  $("#sLook").innerHTML = !t.look || storyBack === "journal" || (storyBack === "journey" && !gpsNear) ? "" : night ? "You won't see it in the dark, but it's down there." : `<b>Look for</b> ${t.look}`;
+  $("#sDeep").textContent = t.deep; $("#sDeep").hidden = true; $("#moreBtn").hidden = !t.deep;
+  $("#sBack").textContent = storyBack === "journey" ? "Back to Journey" : storyBack === "journal" ? "Back" : "Back to the Sky";
+  $("#sClose").setAttribute("aria-label", $("#sBack").textContent);
+  show("story");
+}
+function closeStory() {
+  if (storyBack === "journey") return openJourney();
+  if (storyBack !== "sky") return show(storyBack);
+  cur = null; phase = null; show("sky");
+  if (mode === "demo" || mode === "clock" || gotFix) update(s, pos, hdg, live); else renderSky();
+}
+
+// ---------- Following the flight (engine)
+function stopTracking() {
+  if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId); watchId = null;
+  clearInterval(clockId); clearTimeout(fallbackT); stopPlay();
+}
+function startGPS() {
+  stopTracking(); mode = "live"; gotFix = false; renderSky();
+  if (!navigator.geolocation) return startClock();
+  watchId = navigator.geolocation.watchPosition(onFix, e => { if (e.code === 1) { toast("Location is off for Echoes, so we'll follow by the clock."); startClock(); } },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 120000 });
+  fallbackT = setTimeout(() => { if (!gotFix) startClock(); }, WAIT_FOR_GPS_MS);
+}
+function onFix(p) {
+  const c = p.coords, here = [c.latitude, c.longitude];
+  gotFix = true; lastFixAt = Date.now(); fixAcc = c.accuracy || 1e9;
+  if (mode !== "live") { clearInterval(clockId); mode = "live"; }
+  let h = (c.heading != null && !isNaN(c.heading) && c.speed > 20) ? c.heading : null;
+  if (h == null && lastFix && hav(lastFix, here) > 1.5) h = brg(lastFix, here);
+  if (!lastFix || hav(lastFix, here) > 1.5) lastFix = here;
+  if (h == null) h = hdg ?? brg(here, route.arr.pos);
+  const at = Math.max(0, Math.min(route.total, xtAt(route.dep.pos, route.arr.pos, here).at));
+  const kmh = c.speed != null ? c.speed * 3.6 : null;
+  if (!t0 && kmh > 200) { t0 = new Date(); saveFlight(); }
+  update(at, here, h, { altFt: c.altitude != null ? c.altitude * 3.281 : null, kmh, minLeft: kmh > 100 ? (route.total - at) / kmh * 60 : null });
+}
+function startClock() {
+  if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  clearTimeout(fallbackT); clearInterval(clockId); mode = "clock";
+  if (!t0 && s > 20) { t0 = new Date(Date.now() - s / route.total * route.airMin * 60000); saveFlight(); }
+  const tick = () => {
+    if (!t0) { renderSky(); return; }
+    const f = Math.max(0, Math.min(1, (Date.now() - t0) / 60000 / route.airMin)), p = gcInterp(route.dep.pos, route.arr.pos, Math.min(f, .999));
+    update(f * route.total, p, brg(p, route.arr.pos));
+  };
+  tick(); clockId = setInterval(tick, 10000);
+}
+function update(sNow, p, h, l) {
+  s = sNow; pos = p; hdg = h; live = l || null;
+  for (const it of route.items) {
+    it.due = s >= it.at - leadKm(it.r) && s <= it.at + Math.max(70, it.r * .5);
+    if (it.t !== "line") { const d = hav(p, it.pt), rel = (brg(p, it.pt) - h + 360) % 360; it.liveDist = d; it.liveSide = d < 12 ? "B" : rel < 180 ? "R" : "L"; it.behind = rel > 130 && rel < 230; }
+  }
+  if (mode === "live") addNearby(p, s, h);
+  const airborne = mode === "demo" ? s > 0 : (t0 != null || s > 20);
+  // a story never holds the window: once its place is behind us, it steps aside (still readable in Journey)
+  if (cur && !cur.due && !cur.manual) { if (!met.includes(cur.id) && !skipped.includes(cur.id)) skipped.push(cur.id); cur = null; phase = null; saveFlight(); }
+  const waiting = airborne ? route.items.find(it => it.due && !met.includes(it.id) && !skipped.includes(it.id)) : null;
+  if (waiting && !cur && screen === "sky") discover(waiting);
+  const nowTab = document.querySelector('#tabs [data-tab="sky"]'); if (nowTab) nowTab.classList.toggle("dot", !!waiting && screen !== "sky");
+  if (screen === "journey") journeyTick();
+  renderSky();
+  if (!landed) {
+    if (mode === "live" && l && l.kmh != null && l.kmh < 60 && hav(p, route.arr.pos) < 25 && s > route.total * .7) land();
+    else if (mode !== "live" && s >= route.total - .5) land();
+  }
+}
+function addNearby(p, sNow, h) {
+  for (const pl of PLACES) {
+    if (route.items.some(it => it.id === pl.id)) continue;
+    let best = null; for (const pt of pl.p) { const d = hav(p, pt); if (d < Math.max(pl.r, 40) * .7 && (!best || d < best.d)) best = { d, pt }; }
+    if (best) { const rel = (brg(p, best.pt) - h + 360) % 360, sd = best.d < 12 ? "B" : rel < 180 ? "R" : "L";
+      route.items.push({ id: pl.id, n: pl.n, t: pl.t, r: pl.r, s: pl.s, pt: best.pt, at: sNow, dist: best.d, side: sd, liveSide: sd, liveDist: best.d, due: true });
+      route.items.sort((a, b) => a.at - b.at); }
+  }
+}
+function saveFlight() { if (!demo && plan) store.set("flight", { key: flightKey(plan), met, skipped, opened, saved: savedIds, t0: t0 ? t0.toISOString() : null }); }
+async function keepAwake() { try { if ("wakeLock" in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => wakeLock = null); } } catch (e) {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && screen === "sky" && !demo) keepAwake(); });
+
+// ---------- Demo flight
+function play() {
+  if (playId) return stopPlay();
+  if (cur) { if (!met.includes(cur.id) && !skipped.includes(cur.id)) skipped.push(cur.id); cur = null; phase = null; }
+  $("#play").textContent = "Pause";
+  playId = setInterval(() => { const ns = Math.min(route.total, s + route.total / (route.airMin * 2)), p = gcInterp(route.dep.pos, route.arr.pos, Math.min(ns / route.total, .999)); update(ns, p, brg(p, route.arr.pos)); }, 500);
+}
+function stopPlay() { clearInterval(playId); playId = null; const b = $("#play"); if (b) b.textContent = "Play"; }
+function skip() {
+  if (phase === "hook") return reveal();
+  if (phase === "reveal") { storyBack = "sky"; return openStory(cur); }
+  if (s === 0) { const p0 = gcInterp(route.dep.pos, route.arr.pos, .004); return update(route.total * .004, p0, brg(p0, route.arr.pos)); }
+  const n = route.items.find(it => !met.includes(it.id) && it.at - leadKm(it.r) > s + .5);
+  const ns = n ? Math.min(route.total, Math.max(s, n.at - leadKm(n.r) + 1)) : route.total, p = gcInterp(route.dep.pos, route.arr.pos, Math.min(ns / route.total, .999));
+  update(ns, p, brg(p, route.arr.pos));
+}
+
+const WMO = { 0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Cloudy", 45: "Foggy", 48: "Foggy", 51: "Drizzle", 53: "Drizzle", 55: "Drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain", 80: "Showers", 81: "Showers", 82: "Heavy showers", 95: "Thunderstorms", 96: "Thunderstorms", 99: "Thunderstorms" };
+async function fetchWeather() {
+  try {
+    const a = route.arr.pos, arr = new Date(depDate(plan).getTime() + (20 + route.airMin) * 60000);
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${a[0]}&longitude=${a[1]}&hourly=temperature_2m,weather_code&timezone=Asia%2FKolkata&start_date=${plan.date}&end_date=${plan.date}`);
+    const j = await r.json(), h = Math.min(23, arr.getHours());
+    store.set("wx", { key: plan.to + plan.date, temp: Math.round(j.hourly.temperature_2m[h]), desc: WMO[j.hourly.weather_code[h]] || "" });
+  } catch (e) {}
+}
+
+// ---------- 8 · Journey: see journey.js
+
+// ---------- 9 · Landing: your flight's echoes
+function land() {
+  landed = true; stopTracking();
+  const j = { key: flightKey(plan), from: plan.from, to: plan.to, date: plan.date, mins: route.airMin, met: met.slice(), demo };
+  if (!demo) { const all = store.get("journals", []).filter(x => x.key !== j.key); all.unshift(j); store.set("journals", all.slice(0, 50)); store.set("flight", null); }
+  journalBack = "plan"; showJournal(j);
+}
+function summaryOf(j) {
+  const ids = j.met.filter(id => FULL[id]).concat(j.met.filter(id => !FULL[id] && !['qutub', 'rashtrapati', 'nandi'].includes(id)));
+  const pick = ids.length ? ids : j.met;
+  const e = pick.slice(0, 4).map(id => placeById(id)).filter(Boolean).map(it => tale(it).echo); return e.length ? `Today you flew over ${joinList(e.slice(0, 4))}.` : "A quiet flight, with the sky to yourself."; }
+function showJournal(j) {
+  const a = AIRPORTS.find(x => x[0] === j.from), b = AIRPORTS.find(x => x[0] === j.to), title = `${a[1].replace(/ \(.+\)/, "")} to ${b[1].replace(/ \(.+\)/, "")}`;
+  $("#jTitle").textContent = title;
+  const d = new Date(`${j.date}T12:00:00+05:30`), h = Math.floor(j.mins / 60), m = j.mins % 60;
+  $("#jDate").textContent = `${d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })} · ${h ? h + " h " : ""}${m} min above India${j.demo ? " · demo" : ""}`;
+  $("#jSum").textContent = summaryOf(j);
+  const items = j.met.map(id => placeById(id)).filter(Boolean);
+  $("#jList").innerHTML = items.map(it => `<div class="echo" data-id="${it.id}"><div class="th">${pic(it.id, it.t)}</div><div><b>${it.n.replace(/ \(.+\)$/, "")}</b><span>${tale(it).hook}</span></div></div>`).join("");
+  document.querySelectorAll("#jList .echo").forEach(el => el.onclick = () => { storyBack = "journal"; openStory(placeById(el.dataset.id)); });
+  $("#save").onclick = () => saveImage(title, $("#jDate").textContent, summaryOf(j), items);
+  show("journal");
+}
+function wrap(ctx, text, x, y, maxW, lh) { const words = text.split(" "); let line = ""; for (const w of words) { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x, y); line = w; y += lh; } else line = t; } if (line) ctx.fillText(line, x, y); return y + lh; }
+function saveImage(title, date, sum, items) {
+  const c = document.createElement("canvas"); c.width = 1080; c.height = 1350; const g = c.getContext("2d");
+  g.fillStyle = "#ffffff"; g.fillRect(0, 0, 1080, 1350); g.fillStyle = "#e7f0fa"; g.beginPath(); g.roundRect ? g.roundRect(80, 80, 920, 300, 150) : g.rect(80, 80, 920, 300); g.fill();
+  g.fillStyle = "#5e5e63"; g.font = "600 28px -apple-system, system-ui, sans-serif"; g.fillText("ECHOES", 140, 200);
+  g.fillStyle = "#1d1d1f"; g.font = "64px ui-serif, Georgia, serif"; g.fillText(title, 140, 290);
+  g.fillStyle = "#5e5e63"; g.font = "30px -apple-system, system-ui, sans-serif"; g.fillText(date, 100, 460);
+  g.fillStyle = "#1d1d1f"; g.font = "44px ui-serif, Georgia, serif"; let y = wrap(g, sum, 100, 550, 880, 62) + 30;
+  g.font = "34px ui-serif, Georgia, serif"; for (const it of items.slice(0, 8)) { if (y > 1240) break; g.fillText("·  " + it.n.replace(/ \(.+\)$/, ""), 100, y); y += 52; }
+  g.fillStyle = "#5e5e63"; g.font = "italic 28px ui-serif, Georgia, serif"; g.fillText("Every journey has a story beneath it.", 100, 1290);
+  c.toBlob(async blob => {
+    const file = new File([blob], "echoes-flight.png", { type: "image/png" });
+    try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "My flight's echoes" }); return; } } catch (e) { if (e.name === "AbortError") return; }
+    try { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "echoes-flight.png"; document.body.appendChild(a); a.click(); a.remove(); toast("Saved."); } catch (e) { toast("Couldn't save the image on this device."); }
+  }, "image/png");
+}
+function showEchoes() {
+  const js = store.get("journals", []);
+  $("#eList").innerHTML = js.length ? js.map((j, i) => { const first = placeById(j.met[0]), a = AIRPORTS.find(x => x[0] === j.from), b = AIRPORTS.find(x => x[0] === j.to);
+    return `<div class="echo" data-i="${i}"><div class="th">${first ? pic(first.id, first.t) : ART_TYPE.range}</div><div><b>${a[1].replace(/ \(.+\)/, "")} to ${b[1].replace(/ \(.+\)/, "")}</b><span>${new Date(j.date + "T12:00:00+05:30").toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} · ${j.met.length} ${j.met.length === 1 ? "story" : "stories"}</span></div></div>`; }).join("")
+    : `<p class="quiet">Your flights will appear here after you land.</p>`;
+  document.querySelectorAll("#eList .echo").forEach(el => el.onclick = () => { journalBack = "echoes"; showJournal(js[+el.dataset.i]); });
+  show("echoes");
+}
+
+// ---------- Wire up
+window.addEventListener("DOMContentLoaded", () => {
+  $("#welcomeArt").innerHTML = PHOTOS.has("yamuna") ? `<img src="images/yamuna.jpg" alt="" style="width:100%;height:100%;object-fit:cover">` : ART_WELCOME;
+  fillPlan();
+  const saved = store.get("flight", null);
+  show(store.get("welcomed", false) ? "plan" : "welcome");
+  $("#begin").onclick = () => { store.set("welcomed", true); show("plan"); };
+  document.querySelectorAll(".win").forEach(b => b.onclick = () => pickSide(b.dataset.side));
+  $("#getStories").onclick = () => prepare(false);
+  $("#demoBtn").onclick = () => prepare(true);
+  $("#echoesBtn").onclick = showEchoes;
+  $("#board").onclick = board;
+  $("#win").onclick = windowTap;
+  $("#tap").onclick = e => { e.stopPropagation(); if (phase === "hook") reveal(); };
+  $("#readBtn").onclick = e => { e.stopPropagation(); if (phase === "reveal") { storyBack = "sky"; openStory(cur); } };
+  document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => { if (b.dataset.tab === "journey") openJourney(); else { show("sky"); if (route && (mode !== "live" || gotFix)) update(s, pos, hdg, live); else renderSky(); } });
+  wireAtlas();
+  $("#later1").onclick = e => { e.stopPropagation(); later(); }; $("#later2").onclick = e => { e.stopPropagation(); later(); };
+  $("#play").onclick = play; $("#skip").onclick = skip;
+  $("#sClose").onclick = closeStory; $("#sBack").onclick = closeStory;
+  $("#moreBtn").onclick = () => { $("#sDeep").hidden = false; $("#moreBtn").hidden = true; };
+  $("#jDone").onclick = () => { if (journalBack === "echoes") showEchoes(); else { fillPlan(); show("plan"); } };
+  $("#eBack").onclick = () => { fillPlan(); show("plan"); };
+  // reopening the app mid-flight: go straight back to the sky
+  if (saved && plan && saved.key === flightKey(plan) && Date.now() - depDate(plan) < 8 * 3600000 && Date.now() > depDate(plan) - 3 * 3600000) {
+    route = buildRoute(plan.from, plan.to); met = saved.met || []; skipped = saved.skipped || []; opened = saved.opened || []; savedIds = saved.saved || []; t0 = saved.t0 ? new Date(saved.t0) : null; demo = false; pos = route.dep.pos; hdg = brg(route.dep.pos, route.arr.pos);
+    show("sky"); keepAwake(); startGPS();
+  }
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
+});
+
+// ECHOES — Journey: an illustrated atlas of the stories along the route.
+// Geography is simplified but real: every point below is a real latitude/longitude. Nothing loads from the internet.
+
+// Simplified coastline (real coastal points), used to separate land and sea
+const COAST_W = [[24.7,67.0],[23.6,68.3],[22.4,68.95],[21.6,69.6],[20.9,70.4],[20.7,71.0],[21.3,72.1],[22.3,72.6],[21.2,72.7],[20.4,72.8],[19.0,72.8],[18.0,73.0],[17.0,73.3],[15.9,73.5],[15.5,73.8],[14.8,74.1],[14.1,74.45],[12.9,74.8],[11.25,75.75],[10.0,76.25],[8.9,76.6],[8.5,76.9],[8.08,77.55]];
+const COAST_E = [[8.08,77.55],[8.8,78.15],[9.28,79.2],[10.3,79.85],[11.0,79.85],[11.93,79.83],[12.62,80.2],[13.08,80.29],[13.7,80.25],[14.6,80.15],[15.8,80.9],[16.3,81.7],[17.0,82.3],[17.7,83.3],[18.3,84.0],[19.3,84.9],[19.8,85.8],[20.3,86.7],[21.5,87.1],[21.7,87.7],[21.6,88.3],[21.7,89.2],[22.1,90.3],[22.8,91.5],[21.0,92.2],[19.0,93.6],[16.5,94.5],[16.0,97.6]];
+const SRI_LANKA = [[9.8,80.0],[9.3,80.9],[8.5,81.3],[7.0,81.9],[6.0,80.6],[6.3,79.9],[7.5,79.8],[8.5,79.9],[9.8,80.0]];
+const HIMALAYA = [[34.6,74.0],[33.2,76.0],[31.6,78.0],[30.4,79.9],[29.3,81.5],[28.0,84.5],[27.9,86.9],[27.7,88.2],[27.5,90.0],[27.9,92.0],[28.5,95.0]];
+// Regional labels: [text, lat, lon, kind]
+const REGIONS = [
+ ["Himalaya",31.2,79.4,"land"],["Thar Desert",26.9,71.3,"land"],["Deccan Plateau",18.6,76.6,"land"],["Gangetic Plains",26.4,81.8,"land"],
+ ["Arabian Sea",15.5,70.0,"sea"],["Bay of Bengal",15.5,86.5,"sea"],["Western Ghats",14.6,74.9,"land"],["Vindhya Range",24.1,79.0,"land"],
+ ["Ganga",25.25,84.0,"river"],["Narmada",22.6,77.0,"river"],["Godavari",18.6,79.9,"river"],["Krishna",16.15,78.9,"river"],["Brahmaputra",26.5,93.4,"river"]
+];
+const RIVER_IDS = ["ganga","yamuna","narmada","godavari","krishna","kaveri","brahmaputra"];
+const RANGE_IDS = ["aravalli","vindhya","satpura","ghats","easternghats","dhauladhar","pirpanjal"];
+
+let J = { key: null, sel: 0, view: null, fit: null, K: 1, built: false, allOpen: false, allScroll: 0, returnToAll: false, anim: null, ignoreScrollUntil: 0 };
+let opened = [], savedIds = [];
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- projection (degrees → atlas units; equirectangular, corrected for latitude)
+const P = (lat, lon) => [lon * J.K, -lat];
+function catmull(pts) { // smooth line through real points (only used for rivers/ranges/coast, never the flight route)
+  if (pts.length < 3) return "M" + pts.map(p => p.join(" ")).join("L");
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) { const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += `C${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6},${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6},${p2[0]} ${p2[1]}`; }
+  return d;
+}
+const poly = pts => "M" + pts.map(p => P(...p).map(v => v.toFixed(3)).join(" ")).join("L") + "Z";
+function routeD(a = 0, b = 1) { let d = ""; const n = 64; for (let i = 0; i <= n; i++) { const f = a + (b - a) * i / n, q = P(...gcInterp(route.dep.pos, route.arr.pos, f)); d += (i ? "L" : "M") + q[0].toFixed(3) + " " + q[1].toFixed(3); } return d; }
+
+// ---------- position knowledge (honest)
+function posState() {
+  if (mode === "demo") return { kind: "demo" };
+  if (gpsGood()) return { kind: "gps" };
+  if ((mode === "clock" || mode === "live") && t0) return { kind: "estimated" };
+  return { kind: "none" };
+}
+function statusLine() {
+  const k = posState().kind;
+  if (k === "gps") return ["Following your flight with GPS", "Details"];
+  if (k === "estimated") return [mode === "live" && !gotFix ? "Looking for GPS · position estimated from takeoff time" : "Position estimated from takeoff time", "Adjust"];
+  if (k === "demo") return ["Demo flight · position simulated", "Details"];
+  return [mode === "live" && !gotFix ? "Finding your position. Stories are ready to explore" : "Position not set yet. Stories are ready to explore", "Set takeoff time"];
+}
+function contextFor(it) {
+  const k = posState().kind;
+  if (k === "none") return "Along your route";
+  if (it.due) return k === "gps" ? (it.t === "line" ? "You're crossing it now" : "Near you now") : "Around this part of your flight";
+  return it.at > s ? "Further along your route" : "Earlier on your route";
+}
+
+// ---------- open / build
+function openJourney(refresh) {
+  if (!route) return;
+  const key = flightKey(plan) + (demo ? "|demo" : "");
+  if (J.key !== key) { J.key = key; J.view = null; J.built = false; J.explored = false; J.sel = defaultSel(); J.allOpen = false; }
+  if (!refresh) show("journey");
+  $("#jRoute").textContent = `${route.dep.city} → ${route.arr.city}`;
+  if (!J.built) buildAtlas(); else sizeAtlas();
+  renderCards(); journeyTick(); selectPlace(J.sel, "restore");
+  if (J.allOpen) openAll(true);
+}
+function defaultSel() {
+  const k = posState().kind;
+  if (cur) { const i = route.items.indexOf(cur); if (i >= 0) return i; }
+  if (k !== "none") { const i = route.items.findIndex(it => it.at >= s - 30); if (i >= 0) return i; }
+  return 0;
+}
+function buildAtlas() {
+  J.K = Math.cos(rad((route.dep.pos[0] + route.arr.pos[0]) / 2));
+  const land = "var(--j-land)", sea = "var(--j-sea)";
+  const rivers = PLACES.filter(p => RIVER_IDS.includes(p.id)).map(p => `<path d="${catmull(p.p.map(q => P(...q)))}" class="j-river"/>`).join("");
+  const ranges = PLACES.filter(p => RANGE_IDS.includes(p.id)).map(p => `<path d="${catmull(p.p.map(q => P(...q)))}" class="j-range"/>`).join("")
+    + `<path d="${catmull(HIMALAYA.map(q => P(...q)))}" class="j-range j-high"/>`;
+  const thar = PLACES.find(p => p.id === "thar"), desert = thar ? thar.p.map(q => { const [x, y] = P(...q); return `<ellipse cx="${x}" cy="${y}" rx="${1.6 * J.K}" ry="1.1" class="j-desert"/>`; }).join("") : "";
+  const westSea = poly([...COAST_W, [5, 77.55], [5, 55], [26, 55], [26, 67.0]]);
+  const eastSea = poly([...COAST_E, [5, 100], [5, 77.55]]);
+  $("#atlasSvg").innerHTML = `<rect x="${50 * J.K}" y="-40" width="${55 * J.K}" height="40" fill="${land}"/>
+    <g>${desert}</g>
+    <path d="${westSea}" fill="${sea}"/><path d="${eastSea}" fill="${sea}"/><path d="${poly(SRI_LANKA)}" fill="${land}"/>
+    <path d="${catmull(COAST_W.map(q => P(...q)))}" class="j-coast"/><path d="${catmull(COAST_E.map(q => P(...q)))}" class="j-coast"/>
+    <g>${ranges}</g><g>${rivers}</g>
+    <path d="${routeD()}" class="j-route"/>
+    <path id="jSeg" class="j-seg" d=""/>`;
+  J.built = true; sizeAtlas();
+  const pts = [route.dep.pos, route.arr.pos, ...route.items.map(i => i.pt)].map(q => P(...q));
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const pad = 1.3, bw = Math.max(...xs) - Math.min(...xs) + 2 * pad, bh = Math.max(...ys) - Math.min(...ys) + 2 * pad;
+  const asp = J.W / J.H, w = Math.max(bw, bh * asp, 4);
+  J.fit = { cx: (Math.max(...xs) + Math.min(...xs)) / 2, cy: (Math.max(...ys) + Math.min(...ys)) / 2, w };
+  if (!J.view) J.view = { ...J.fit };
+  applyView();
+}
+function sizeAtlas() { const r = $("#atlas").getBoundingClientRect(); J.W = r.width || 360; J.H = r.height || 320; }
+
+// ---------- view (pan & zoom by the passenger only; never automatic)
+function clampView(v) {
+  const w = Math.max(1.2, Math.min(42, v.w)), h = w * J.H / J.W;
+  return { w, cx: Math.max(64 * J.K + w / 2 - 6, Math.min(100 * J.K - w / 2 + 6, v.cx)), cy: Math.max(-37 + h / 2 - 4, Math.min(-5 - h / 2 + 4, v.cy)) };
+}
+function applyView() {
+  J.view = clampView(J.view);
+  const { cx, cy, w } = J.view, h = w * J.H / J.W;
+  $("#atlasSvg").setAttribute("viewBox", `${(cx - w / 2).toFixed(4)} ${(cy - h / 2).toFixed(4)} ${w.toFixed(4)} ${h.toFixed(4)}`);
+  layoutOverlay();
+}
+function toPx(lat, lon) { const [x, y] = P(lat, lon), { cx, cy, w } = J.view, h = w * J.H / J.W; return [(x - (cx - w / 2)) / w * J.W, (y - (cy - h / 2)) / h * J.H]; }
+function animateTo(target) {
+  cancelAnimationFrame(J.anim);
+  if (reduceMotion()) { J.view = target; return applyView(); }
+  const from = { ...J.view }, t0a = performance.now(), dur = 420;
+  const step = now => { const k = Math.min(1, (now - t0a) / dur), e = 1 - Math.pow(1 - k, 3);
+    J.view = { cx: from.cx + (target.cx - from.cx) * e, cy: from.cy + (target.cy - from.cy) * e, w: from.w + (target.w - from.w) * e }; applyView();
+    if (k < 1) J.anim = requestAnimationFrame(step); };
+  J.anim = requestAnimationFrame(step);
+}
+function zoomBy(f, px, py) {
+  J.explored = true;
+  const { cx, cy, w } = J.view, h = w * J.H / J.W;
+  const ax = px == null ? cx : cx - w / 2 + px / J.W * w, ay = py == null ? cy : cy - h / 2 + py / J.H * h, nw = w / f;
+  animateTo(clampView({ w: nw, cx: ax + (cx - ax) / f, cy: ay + (cy - ay) / f }));
+}
+function anchorPoint() { // where the plane is (or is estimated to be); null when unknown
+  const k = posState().kind; if (k === "none") return null;
+  return k === "gps" && pos ? pos : gcInterp(route.dep.pos, route.arr.pos, Math.min(.999, Math.max(0, s / route.total)));
+}
+function returnTarget() { const a = anchorPoint(); if (!a) return { ...J.fit }; const [x, y] = P(...a); return clampView({ cx: x, cy: y, w: Math.min(J.fit.w, 9) }); }
+
+// ---------- overlay: markers, labels, position
+function layoutOverlay() {
+  if (!route || !J.view) return;
+  const W = J.W, H = J.H, M = 24, items = route.items;
+  const html = [];
+  // regional labels (quiet, only where they don't crowd markers)
+  const mk = items.map(it => toPx(...it.pt));
+  for (const [t, la, lo, kind] of REGIONS) {
+    const [x, y] = toPx(la, lo); if (x < 30 || x > W - 30 || y < 16 || y > H - 16) continue;
+    if (mk.some(([mx, my]) => Math.abs(mx - x) < 60 && Math.abs(my - y) < 20)) continue;
+    html.push(`<span class="j-region ${kind}" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px" aria-hidden="true">${t}</span>`);
+  }
+  // cities at either end
+  for (const [c, q] of [[route.dep.city, route.dep.pos], [route.arr.city, route.arr.pos]]) { const [x, y] = toPx(...q);
+    if (x > -20 && x < W + 20 && y > -20 && y < H + 20) html.push(`<span class="j-city" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px" aria-hidden="true"><i></i>${c}</span>`); }
+  // story markers, grouped when they would overlap
+  const groups = [], [sx, sy] = mk[J.sel] || [-999, -999], nearSel = [];
+  items.forEach((it, i) => { if (i === J.sel) return; const [x, y] = mk[i];
+    if (Math.hypot(x - sx, y - sy) < 48) { nearSel.push(i); return; }
+    if (x < -M || x > W + M || y < -M || y > H + M) return;
+    const g = groups.find(g => Math.hypot(g.x - x, g.y - y) < 38); if (g) { g.i.push(i); g.x = (g.x * (g.i.length - 1) + x) / g.i.length; g.y = (g.y * (g.i.length - 1) + y) / g.i.length; } else groups.push({ x, y, i: [i] }); });
+  for (const g of groups) {
+    if (g.i.length === 1) { const it = items[g.i[0]], o = opened.includes(it.id);
+      html.push(`<button class="j-mk${o ? " op" : ""}" data-i="${g.i[0]}" style="left:${g.x.toFixed(0)}px;top:${g.y.toFixed(0)}px" aria-label="${esc(it.n)}${o ? ", opened" : ""}. Show story preview"><span class="j-th">${pic(it.id, it.t)}</span></button>`); }
+    else html.push(`<button class="j-grp" data-g="${g.i.join(",")}" style="left:${g.x.toFixed(0)}px;top:${g.y.toFixed(0)}px" aria-label="${g.i.length} stories close together: ${esc(g.i.map(i => items[i].n).join(", "))}. Zoom in"><span class="j-th">${pic(items[g.i[0]].id, items[g.i[0]].t)}</span><b>${g.i.length}</b></button>`);
+  }
+  // places hidden under the selected marker: a small bubble beside it, tap to zoom in
+  if (nearSel.length) html.push(`<button class="j-near" data-g="${[J.sel, ...nearSel].join(",")}" style="left:${(sx + 40).toFixed(0)}px;top:${(sy - 22).toFixed(0)}px" aria-label="${nearSel.length} more ${nearSel.length > 1 ? "stories" : "story"} close by: ${esc(nearSel.map(i => items[i].n).join(", "))}. Zoom in">+${nearSel.length}</button>`);
+  // selected place, always on top with its name
+  const si = items[J.sel];
+  if (si) { const [x, y] = mk[J.sel]; if (x > -40 && x < W + 40 && y > -40 && y < H + 40)
+    html.push(`<button class="j-mk sel" data-i="${J.sel}" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px" aria-label="${esc(si.n)}, selected" aria-current="true"><span class="j-th">${pic(si.id, si.t)}</span><span class="j-name">${esc(si.n.replace(/ \(.+\)$/, ""))}</span></button>`); }
+  // position: a dot only with real GPS; otherwise a softly highlighted stretch of route
+  const ps = posState().kind;
+  if (ps === "gps" && pos) { const [x, y] = toPx(...pos); html.push(`<span class="j-plane" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px" role="img" aria-label="Your position from GPS"></span>`); }
+  else if (ps === "estimated" || ps === "demo") { const a = anchorPoint(), [x, y] = toPx(...a);
+    html.push(`<span class="j-about" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px" aria-hidden="true">${ps === "demo" ? "Demo position" : "About here"}</span>`); }
+  $("#atlasOverlay").innerHTML = html.join("");
+  document.querySelectorAll("#atlasOverlay .j-mk").forEach(b => b.onclick = e => { if (J.dragged) return; selectPlace(+b.dataset.i, "marker"); });
+  document.querySelectorAll("#atlasOverlay .j-grp, #atlasOverlay .j-near").forEach(b => b.onclick = () => { if (J.dragged) return; const ids = b.dataset.g.split(",").map(Number);
+    const pts = ids.map(i => P(...route.items[i].pt)), cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+    J.explored = true; animateTo(clampView({ cx, cy, w: J.view.w / 2.4 })); });
+  // "Return to current region" only when the passenger has wandered away
+  const tgt = returnTarget(), away = Math.hypot(tgt.cx - J.view.cx, tgt.cy - J.view.cy) > J.view.w * .28 || J.view.w > tgt.w * 1.6 || J.view.w < tgt.w / 1.8;
+  const rb = $("#jReturn"); rb.hidden = !(away && J.explored); rb.textContent = anchorPoint() ? "Return to current region" : "Show whole route";
+}
+function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+// ---------- live updates while Journey is open (never moves the view, never changes the selection)
+function journeyTick() {
+  if (!route || !J.built) return;
+  const [t, a] = statusLine(); $("#jStatusText").textContent = t; $("#jStatusBtn").textContent = a;
+  const k = posState().kind, seg = $("#jSeg");
+  if (k === "estimated" || k === "demo") { const f = s / route.total, d = 120 / route.total; seg.setAttribute("d", routeD(Math.max(0, f - d), Math.min(1, f + d))); }
+  else seg.setAttribute("d", "");
+  document.querySelectorAll("#jCards .card").forEach(c => { const it = route.items[+c.dataset.i]; if (it) c.querySelector(".ctx").textContent = contextFor(it); });
+  layoutOverlay();
+  if ($("#detSheet").classList.contains("on") && !$("#tkTime")) renderDetails();
+}
+
+// ---------- story previews (one at a time, swipe or tap arrows)
+function renderCards() {
+  $("#jCards").innerHTML = route.items.map((it, i) => { const t = tale(it), o = opened.includes(it.id), sv = savedIds.includes(it.id) && !o;
+    return `<article class="card" data-i="${i}" role="group" aria-roledescription="story" aria-label="${i + 1} of ${route.items.length}: ${esc(it.n)}">
+      <div class="cimg">${pic(it.id, it.t)}</div>
+      <div class="cbody"><div class="ctx">${contextFor(it)}</div><h3>${esc(it.n.replace(/ \(.+\)$/, ""))}</h3><p>${esc(t.hook)}</p>
+      <div class="cact"><button class="jbtn read" data-i="${i}">Read story</button>${o ? `<span class="cstate">Opened</span>` : sv ? `<span class="cstate">Saved</span>` : ""}</div></div></article>`; }).join("");
+  document.querySelectorAll("#jCards .read").forEach(b => b.onclick = () => readFromJourney(+b.dataset.i, false));
+  $("#jCount").textContent = "";
+}
+function selectPlace(i, from) {
+  if (!route.items.length) return;
+  i = Math.max(0, Math.min(route.items.length - 1, i)); J.sel = i;
+  $("#jCount").textContent = `${i + 1} of ${route.items.length}`;
+  $("#jPrev").disabled = i === 0; $("#jNext").disabled = i === route.items.length - 1;
+  if (from !== "scroll") { const box = $("#jCards"), c = box.querySelector(`.card[data-i="${i}"]`);
+    if (c) { const left = c.offsetLeft - box.offsetLeft - (box.clientWidth - c.clientWidth) / 2, far = Math.abs(left - box.scrollLeft) > box.clientWidth * 2.5;
+      J.prog = true; box.scrollTo({ left, behavior: from === "restore" || far || reduceMotion() ? "auto" : "smooth" }); clearTimeout(J.st); J.st = setTimeout(() => { J.prog = false; }, 900); } }
+  // keep the chosen place in sight, gently, only if it has left the atlas
+  const [x, y] = toPx(...route.items[i].pt);
+  if (from !== "restore" && (x < 40 || x > J.W - 40 || y < 40 || y > J.H - 40)) { const [px, py] = P(...route.items[i].pt); J.explored = true; animateTo(clampView({ ...J.view, cx: px, cy: py })); }
+  else layoutOverlay();
+}
+function onCardsScroll() { // a swipe chooses a story; scrolling we started ourselves never overrides the choice
+  clearTimeout(J.st); J.st = setTimeout(() => { if (J.prog) { J.prog = false; return; }
+    const box = $("#jCards"), mid = box.scrollLeft + box.clientWidth / 2;
+    let best = 0, bd = 1e9; box.querySelectorAll(".card").forEach(c => { const d = Math.abs(c.offsetLeft - box.offsetLeft + c.clientWidth / 2 - mid); if (d < bd) { bd = d; best = +c.dataset.i; } });
+    if (best !== J.sel) selectPlace(best, "scroll"); }, 140);
+}
+function readFromJourney(i, fromAll) {
+  J.sel = i; J.returnToAll = fromAll; if (fromAll) J.allScroll = $("#allList").scrollTop;
+  const it = route.items[i]; if (!opened.includes(it.id)) { opened.push(it.id); saveFlight(); }
+  storyBack = "journey"; closeSheets(true); openStory(it);
+}
+
+// ---------- All stories
+function openAll(restore) {
+  const third = route.airMin / 3, groups = [[], [], []];
+  route.items.forEach((it, i) => groups[Math.min(2, Math.floor(it.at / route.total * route.airMin / third))].push(i));
+  const names = [`Leaving ${route.dep.city}`, "The middle of the flight", `Towards ${route.arr.city}`], known = posState().kind !== "none";
+  $("#allTitle").textContent = `${route.items.length} stories along your journey`;
+  $("#allList").innerHTML = groups.map((g, gi) => !g.length ? "" : `<h3 class="grp">${names[gi]}</h3>` + g.map(i => { const it = route.items[i], t = tale(it), o = opened.includes(it.id), sv = savedIds.includes(it.id) && !o;
+    const st = o ? "Opened" : sv ? "Saved" : known && it.at - leadKm(it.r) > s ? "Further along your route" : "";
+    return `<button class="story-row" data-i="${i}"><span class="sr-img">${pic(it.id, it.t)}</span><span class="sr-tx"><b>${esc(it.n.replace(/ \(.+\)$/, ""))}</b><span class="sr-hook">${esc(t.hook)}</span>${st ? `<span class="sr-st">${st}</span>` : ""}</span></button>`; }).join("")).join("");
+  document.querySelectorAll("#allList .story-row").forEach(b => b.onclick = () => readFromJourney(+b.dataset.i, true));
+  $("#allSheet").classList.add("on"); $("#allSheet").setAttribute("aria-hidden", "false"); J.allOpen = true;
+  if (restore) $("#allList").scrollTop = J.allScroll; else $("#allList").scrollTop = 0;
+  setTimeout(() => $("#allClose").focus({ preventScroll: true }), 50);
+}
+function closeAll() { J.allOpen = false; $("#allSheet").classList.remove("on"); $("#allSheet").setAttribute("aria-hidden", "true"); }
+
+// ---------- Journey details (bottom sheet)
+function renderDetails() {
+  const k = posState().kind, start = t0 || null;
+  const howMap = { gps: "Your phone's GPS", estimated: "Takeoff time (estimated)", demo: "Demo flight (simulated)", none: mode === "live" ? "Looking for GPS" : "Not set yet" };
+  const rows = [];
+  rows.push(`<div class="drow"><span>Placing you by</span><b>${howMap[k]}</b></div>`);
+  if (mode !== "demo") rows.push(`<div class="dbtns"><button class="jbtn ${mode === "live" ? "on" : ""}" id="dGps">Use GPS</button><button class="jbtn ${mode === "clock" ? "on" : ""}" id="dClock">Use takeoff time</button></div>`);
+  if (mode !== "demo") rows.push(`<div class="drow"><span>Took off</span><b id="dTk">${start ? fmtTime(start) : "Not set"} <button class="link" id="dTkBtn">${start ? "Change" : "Set time"}</button></b></div>`);
+  if (k !== "none") {
+    const est = k !== "gps", left = Math.max(0, Math.round(route.total - s));
+    const landAt = live && live.minLeft != null ? new Date(Date.now() + live.minLeft * 60000) : new Date((t0 || schedTakeoff()).getTime() + route.airMin * 60000);
+    rows.push(`<div class="drow"><span>Still to fly</span><b>${est ? "about " : ""}${left.toLocaleString("en-IN")} km</b></div>`);
+    rows.push(`<div class="drow"><span>Landing</span><b>${est ? "around " : ""}${fmtTime(landAt)}</b></div>`);
+  }
+  if (k === "gps" && live) { // only what the phone actually measured
+    if (live.altFt != null && live.altFt > 500) rows.push(`<div class="drow"><span>Height (GPS)</span><b>${(Math.round(live.altFt / 1000) * 1000).toLocaleString("en-IN")} ft</b></div>`);
+    if (live.kmh != null && live.kmh > 50) rows.push(`<div class="drow"><span>Ground speed (GPS)</span><b>${Math.round(live.kmh / 10) * 10} km/h</b></div>`);
+  }
+  const wx = store.get("wx", null); if (wx && wx.key === plan.to + plan.date) rows.push(`<div class="drow"><span>${route.arr.city} forecast</span><b>${wx.temp}°C, ${wx.desc.toLowerCase()}</b></div>`);
+  rows.push(`<p class="dnote">${k === "gps" ? "Directions like “on your left” use your phone's GPS." : k === "estimated" ? "Without GPS, Echoes estimates where you are from the takeoff time, so places are described as “around this part of your flight”, not exact directions." : k === "demo" ? "This is a demo. Nothing here reflects a real flight." : "Echoes doesn't know where you are yet. You can still read every story. Set your takeoff time, or allow location, to follow along."}</p>`);
+  $("#detBody").innerHTML = rows.join("");
+  const g = $("#dGps"), c = $("#dClock"), tb = $("#dTkBtn");
+  if (g) g.onclick = () => { startGPS(); renderDetails(); journeyTick(); };
+  if (c) c.onclick = () => { startClock(); renderDetails(); journeyTick(); };
+  if (tb) tb.onclick = () => takeoffPicker($("#dTk"), () => setTimeout(() => { renderDetails(); journeyTick(); }, 50));
+}
+function openDetails(pick) { renderDetails(); $("#detSheet").classList.add("on"); $("#detSheet").setAttribute("aria-hidden", "false"); $("#scrim").classList.add("on"); if (pick && $("#dTkBtn")) $("#dTkBtn").click(); setTimeout(() => $("#detClose").focus({ preventScroll: true }), 50); }
+function closeSheets(keepAll) { $("#detSheet").classList.remove("on"); $("#detSheet").setAttribute("aria-hidden", "true"); $("#scrim").classList.remove("on"); if (!keepAll) closeAll(); else { $("#allSheet").classList.remove("on"); } }
+
+// ---------- gestures on the atlas (pan with one finger, pinch to zoom; separate from story swiping)
+function wireAtlas() {
+  const el = $("#atlas"), pts = new Map(); let start = null;
+  el.addEventListener("pointerdown", e => { pts.set(e.pointerId, [e.clientX, e.clientY]); J.dragged = false;
+    start = { view: { ...J.view }, pts: new Map(pts) }; cancelAnimationFrame(J.anim); });
+  el.addEventListener("pointermove", e => { if (!pts.has(e.pointerId) || !start) return; pts.set(e.pointerId, [e.clientX, e.clientY]);
+    const r = el.getBoundingClientRect(), v = start.view, h = v.w * J.H / J.W;
+    if (pts.size === 1 && start.pts.size === 1) { const [sx, sy] = [...start.pts.values()][0], [x, y] = pts.get(e.pointerId);
+      if (Math.hypot(x - sx, y - sy) > 6) J.dragged = true;
+      if (J.dragged) { J.explored = true; J.view = { ...v, cx: v.cx - (x - sx) / J.W * v.w, cy: v.cy - (y - sy) / J.H * h }; applyView(); } }
+    else if (pts.size === 2 && start.pts.size === 2) { J.dragged = true; J.explored = true;
+      const [a0, b0] = [...start.pts.values()], [a1, b1] = [...pts.values()], d0 = Math.hypot(a0[0] - b0[0], a0[1] - b0[1]), d1 = Math.hypot(a1[0] - b1[0], a1[1] - b1[1]);
+      const f = d1 / Math.max(20, d0), mx = (a0[0] + b0[0]) / 2 - r.left, my = (a0[1] + b0[1]) / 2 - r.top;
+      const ax = v.cx - v.w / 2 + mx / J.W * v.w, ay = v.cy - h / 2 + my / J.H * h;
+      J.view = { w: v.w / f, cx: ax + (v.cx - ax) / f, cy: ay + (v.cy - ay) / f }; applyView(); } });
+  const end = e => { pts.delete(e.pointerId); start = pts.size ? { view: { ...J.view }, pts: new Map(pts) } : null; setTimeout(() => { if (!pts.size) J.dragged = false; }, 30); };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end); el.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") end(e); });
+  el.addEventListener("wheel", e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoomBy(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  $("#jZoomIn").onclick = () => zoomBy(1.6); $("#jZoomOut").onclick = () => zoomBy(1 / 1.6);
+  $("#jReturn").onclick = () => { J.explored = false; animateTo(returnTarget()); };
+  $("#jPrev").onclick = () => selectPlace(J.sel - 1, "button"); $("#jNext").onclick = () => selectPlace(J.sel + 1, "button");
+  $("#jCards").addEventListener("scroll", onCardsScroll, { passive: true });
+  $("#jAll").onclick = () => openAll(false); $("#allClose").onclick = closeAll;
+  $("#jDetails").onclick = () => openDetails(false); $("#jStatusBtn").onclick = () => openDetails(posState().kind === "none" || posState().kind === "estimated");
+  $("#detClose").onclick = () => closeSheets(true); $("#scrim").onclick = () => closeSheets(true);
+  window.addEventListener("resize", () => { if (screen === "journey" && J.built) { sizeAtlas(); applyView(); } });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { if ($("#detSheet").classList.contains("on")) closeSheets(true); else if (J.allOpen) closeAll(); } });
+}
+
+</script>
+</body>
+</html>
